@@ -22,7 +22,8 @@ adding "TLS_REQCERT allow" was a satisfactory work-around.
 INSTALLATION
 ============
 Drop mldap.py into your python include path and include it. You will need
-to create a configuration file for your network.
+to create a configuration file for your network (default location is in 
+/etc/ldap.creds).
 
 credsfile example:
     [LDAP]
