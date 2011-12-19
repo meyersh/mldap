@@ -16,6 +16,7 @@
 # SRGM Jun, 2009 
 #   * FEATURE: create() for new accounts
 ################################################################################
+import os
 import sys
 import ldap
 import datetime
@@ -28,6 +29,9 @@ import pprint
 #
 ## Read up the configuration stuff (or die trying)
 #
+
+CREDSFILE = '/etc/ldap.creds'
+
 def read_creds(credsfile = None):
     """ Read in the config file and return its data as a dictionary.
     
@@ -45,7 +49,7 @@ def read_creds(credsfile = None):
     """
 
     if credsfile is None:
-        credsfile = '/etc/ldap.creds'
+        credsfile = CREDSFILE
 
     config = ConfigParser.RawConfigParser()
     config.read(credsfile)
@@ -286,8 +290,10 @@ class mldap:
         LDAP_PASSWORD, or LDAP_SERVER keys to override what is loaded from 
         the credsfile variable.
         """
+        credsfile = args.get('credsfile') if args.get('credsfile') else CREDSFILE
 
-        self.__dict__.update(read_creds(args.get('credsfile')))
+        if os.path.exists(credsfile):
+            self.__dict__.update(read_creds(args.get('credsfile')))
 
         self.__dict__.update(args)
 
