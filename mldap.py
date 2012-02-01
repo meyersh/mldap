@@ -484,6 +484,45 @@ class mldap:
         else:
             print "sAMAccountName '%s' already exists!" % samaccountname
 
+    def create_group(self, groupname, path, members=[]):
+        """ Create a new group with the specified members.
+
+        @type groupname: String
+        @param groupname: Group name to create
+        
+        @type path: String
+        @param path: base CN of new group
+        
+        @type members: List
+        @param members: A list of members to pre-populate group.
+        
+        """
+
+        if self.exists(groupname):
+            return False # Group already exists.
+
+        # Try to massage the members list into a list of DN's
+        group_members = list()
+        if members:
+            for m in list(set(members)): # no duplicates
+                if ad.exists(m):
+                    group_members.append(ad.get_dn_from_sn(m))
+
+        dn="CN=%s,%s" % (groupname, path)
+           
+        add_record = [
+            ('objectclass', ['top', 'group']),
+            ('samaccountname', groupname),
+            ('cn', groupname)
+            ]
+        
+        try:
+            self.ldap_client.add_s(dn, add_record)
+            for m in group_members:
+                add_to_group(m, groupname)
+        except ldap.CONSTRAINT_VIOLATION, info:
+            print info
+
 
     def try_member_search(self, sAMAccountName):
         searchpath=('cn=group,dc=base')
