@@ -20,7 +20,7 @@ import os
 import sys
 import ldap
 import datetime
-import ConfigParser
+import configparser
 import base64 # for password obfuscation
 
 import pprint
@@ -51,7 +51,7 @@ def read_creds(credsfile = None):
     if credsfile is None:
         credsfile = CREDSFILE
 
-    config = ConfigParser.RawConfigParser()
+    config = configparser.RawConfigParser()
     config.read(credsfile)
 
     assert config.has_section('LDAP')
@@ -84,7 +84,7 @@ class ADuser(object):
 
         self.ad = ad_obj
 
-        for attr_key, attr_val in attrs.items():
+        for attr_key, attr_val in list(attrs.items()):
             if attr_val.__class__ is list().__class__:
                 l = len(attr_val)
                 if l == 1:
@@ -304,7 +304,7 @@ class mldap:
         try:
             self.exists(self.LDAP_USERNAME)
             return True
-        except ldap.LDAPError, e:
+        except ldap.LDAPError as e:
             """ e will be "LDAP connection invalid" though I'm avoiding
             doing a string compare on this fact. """
             return False
@@ -321,13 +321,13 @@ class mldap:
             self.ldap_client.simple_bind_s(
                 self.LDAP_USERNAME, self.LDAP_PASSWORD)
         
-        except ldap.INVALID_CREDENTIALS, e:
-            print "Invalid credentials: ",e
+        except ldap.INVALID_CREDENTIALS as e:
+            print("Invalid credentials: ",e)
             sys.exit()
-        except ldap.SERVER_DOWN, e:
-            print "Your server (%s) appears to be down." % self.LDAP_SERVER
+        except ldap.SERVER_DOWN as e:
+            print("Your server (%s) appears to be down." % self.LDAP_SERVER)
             for error in e:
-                print "  %(info)s\n  %(desc)s" % (error)
+                print("  %(info)s\n  %(desc)s" % (error))
             sys.exit()
 
         return self.ldap_client
@@ -453,7 +453,7 @@ class mldap:
                 attributes['password'] = 'changeme'
 
             # Encode password as unicode for AD.
-            unicode1 = unicode("\"" + attributes['password'] + "\"", "iso-8859-1")
+            unicode1 = str("\"" + attributes['password'] + "\"", "iso-8859-1")
             unicode2 = unicode1.encode("utf-16-le")
             attributes['password'] = unicode2
 
@@ -479,10 +479,10 @@ class mldap:
 
             try:
                 self.ldap_client.add_s(dn, add_record)
-            except ldap.CONSTRAINT_VIOLATION, info:
-                print info
+            except ldap.CONSTRAINT_VIOLATION as info:
+                print(info)
         else:
-            print "sAMAccountName '%s' already exists!" % samaccountname
+            print("sAMAccountName '%s' already exists!" % samaccountname)
 
     def create_group(self, groupname, path, members=[]):
         """ Create a new group with the specified members.
@@ -520,8 +520,8 @@ class mldap:
             self.ldap_client.add_s(dn, add_record)
             for m in group_members:
                 add_to_group(m, groupname)
-        except ldap.CONSTRAINT_VIOLATION, info:
-            print info
+        except ldap.CONSTRAINT_VIOLATION as info:
+            print(info)
 
 
     def try_member_search(self, sAMAccountName):
@@ -629,7 +629,7 @@ class mldap:
         make sure that it has the proper AD permissions. """
         
         # Encode password as unicode for AD.
-        unicode1 = unicode("\"" + newpass + "\"", "iso-8859-1")
+        unicode1 = str("\"" + newpass + "\"", "iso-8859-1")
         unicode2 = unicode1.encode("utf-16-le")
         unicodePwd = unicode2 # Our unicoded password.
 
@@ -655,9 +655,9 @@ class mldap:
             self.ldap_client.modify_s(group, [(ldap.MOD_ADD, 'member', [dn])])
             return 0
         except ldap.ALREADY_EXISTS:
-            print "Cannot add %s to group %s: user is already a member." % (
+            print("Cannot add %s to group %s: user is already a member." % (
                 sAMAccountName, 
-                groupCN)
+                groupCN))
             return 1
 
 #
@@ -960,7 +960,7 @@ class mldap:
         winnt_time = int(self.getattr(samaccountname, 'accountExpires'))
         winnt_time /= 10000000 # Convert to seconds
 
-        never_expires = 922337203685L
+        never_expires = 922337203685
 
         if winnt_time == never_expires or winnt_time == 0:
             return False;
@@ -1003,9 +1003,9 @@ class mldap:
         ) '''
 
         rdn = srcDN.split(',')[0]
-        print srcDN
-        print rdn
-        print destDN
+        print(srcDN)
+        print(rdn)
+        print(destDN)
 
         self.ldap_client.rename_s( srcDN, rdn, destDN )
 
@@ -1069,10 +1069,10 @@ class mldap:
         for attr in writable_attrs:
             if (attr in ADuser_object.__dict__ and attr in ad_state.__dict__):
                 if ADuser_object.__dict__[attr] != ad_state.__dict__[attr]:
-                    print "%s has been updated!" % attr
+                    print("%s has been updated!" % attr)
             elif (attr in ADuser_object.__dict__ 
                   and attr not in ad_state.__dict__):
-                print "%s has been updated!" % attr
+                print("%s has been updated!" % attr)
         pass
         
     def getgroup(self, group):
@@ -1129,11 +1129,11 @@ def mustang_connect():
         # perform a synchronous bind
         ldap_client.simple_bind_s(LDAP_USERNAME, LDAP_PASSWORD)
     
-    except ldap.INVALID_CREDENTIALS, e:
-        print "Invalid credentials: ",e
+    except ldap.INVALID_CREDENTIALS as e:
+        print("Invalid credentials: ",e)
         sys.exit()
-    except ldap.SERVER_DOWN, e:
-        print "Your server appears to be down: ", e
+    except ldap.SERVER_DOWN as e:
+        print("Your server appears to be down: ", e)
         sys.exit()
 
 
@@ -1191,7 +1191,7 @@ def create(samaccountname, cn, path, attributes={}):
             attributes['password'] = 'changeme'
 
         # Encode password as unicode for AD.
-        unicode1 = unicode("\"" + attributes['password'] + "\"", "iso-8859-1")
+        unicode1 = str("\"" + attributes['password'] + "\"", "iso-8859-1")
         unicode2 = unicode1.encode("utf-16-le")
         attributes['password'] = unicode2
 
@@ -1216,10 +1216,10 @@ def create(samaccountname, cn, path, attributes={}):
 
         try:
             ldap_client.add_s(dn, add_record)
-        except ldap.CONSTRAINT_VIOLATION, info:
-            print info
+        except ldap.CONSTRAINT_VIOLATION as info:
+            print(info)
     else:
-        print "sAMAccountName '%s' already exists!" % samaccountname
+        print("sAMAccountName '%s' already exists!" % samaccountname)
 
 #
 # Return a DN for a given SN (sAMAccountName)
@@ -1314,7 +1314,7 @@ def isdisabled(samaccountname):
         else:
             return 0
     except:
-        print "DEBUG: isdisabled(%s) failed." % samaccountname
+        print("DEBUG: isdisabled(%s) failed." % samaccountname)
 
 
 # 
