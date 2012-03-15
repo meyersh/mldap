@@ -25,6 +25,7 @@ import base64 # for password obfuscation
 
 import pprint
 
+__version__ = "1.0.0"
 
 #
 ## Read up the configuration stuff (or die trying)
