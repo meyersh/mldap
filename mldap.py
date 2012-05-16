@@ -76,7 +76,7 @@ def read_creds(credsfile = None):
     if config.has_option('LDAP', 'user_base'):
         creds['LDAP_USER_BASE'] = config.get('LDAP', 'user_base'),
     else:
-        creds['LDAP_DOMAIN'] = creds['LDAP_BASE']
+        creds['LDAP_USER_BASE'] = creds['LDAP_BASE']
 
     return creds
         
