@@ -25,7 +25,7 @@ import base64 # for password obfuscation
 
 import pprint
 
-__version__ = "1.0.1"
+__version__ = "1.0.2"
 
 #
 ## Read up the configuration stuff (or die trying)
@@ -43,6 +43,8 @@ def read_creds(credsfile = None):
     PASSWORD=some_base64_encoded_str=
     BASE=dc=my,dc=domain,dc=url
     DOMAIN=my.domain.url
+    USER_BASE=ou=Users,dc=my,dc=domain,dc=url
+    GROUP_BASE=ou=Groups,dc=my,dc=domain,dc=url
     ...
 
     @return: Dictionary with keys(): ('LDAP_USERNAME', 'LDAP_PASSWORD',
@@ -57,16 +59,27 @@ def read_creds(credsfile = None):
 
     assert config.has_section('LDAP')
 
-    return {
+    creds = {
         'LDAP_USERNAME': config.get('LDAP', 'username'),
         'LDAP_PASSWORD': base64.b64decode(config.get('LDAP', 'password')),
         'LDAP_SERVER': config.get('LDAP', 'server'),
         'LDAP_BASE': config.get('LDAP', 'base'),
-        'LDAP_GROUP_BASE': config.get('LDAP', 'group_base'),
-        'LDAP_USER_BASE': config.get('LDAP', 'user_base'),
         'LDAP_DOMAIN': config.get('LDAP', 'domain')
         }
 
+    # Handle optional fields.
+    if config.has_option('LDAP', 'group_base'):
+        creds['LDAP_GROUP_BASE'] = config.get('LDAP', 'group_base')
+    else:
+        creds['LDAP_GROUP_BASE'] = creds['LDAP_BASE']
+
+    if config.has_option('LDAP', 'user_base'):
+        creds['LDAP_USER_BASE'] = config.get('LDAP', 'user_base'),
+    else:
+        creds['LDAP_DOMAIN'] = creds['LDAP_BASE']
+
+    return creds
+        
 #creds = read_creds()
 
 ################################################################################
