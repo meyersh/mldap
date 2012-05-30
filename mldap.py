@@ -248,9 +248,11 @@ class uac(object):
 
     def set(self, flag):
         self.uac_value |= int(flag)
+        return self
 
     def unset(self, flag):
         self.uac_value &= (~int(flag) & 0xFFFFFFFF)
+        return self
 
     def is_set(self, flag):
         if self.uac_value & int(flag):
@@ -266,7 +268,16 @@ class uac(object):
     def __repr__(self):
         return "<%s object (%s)>" % (self.__class__, str(self.flags()))
 
+    def commit(self):
+        try:
+            self.ad.setuac(self.samaccountname, self)
+        except:
+            raise Exception("No AD data member to commit")
+
     def __init__(self, value=0):
+        self.ad = None
+        self.samaccountname = None
+
         self.uac_value = int(value)
         self.flags = self.instance_flags
 
@@ -935,12 +946,17 @@ class mldap:
         >>> ad.getuac('shaunt')
         <<class 'mldap.uac'> object (['ADS_UF_NORMAL_ACCOUNT'])>
 
-        @return: a uac object based on these flags. 
+        @return: a uac object derived from these flags. 
         """
         userAccountControl_flags = int(
             self.getattr(samaccountname, 'userAccountControl'))
 
-        return uac(userAccountControl_flags)
+        user_uac = uac(userAccountControl_flags)
+        user_uac.ad = self
+        user_uac.samaccountname = samaccountname
+
+        return user_uac
+
 
     def setuac(self, samaccountname, new_uac):
         """ Set the uac field for a given user.  
