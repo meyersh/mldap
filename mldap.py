@@ -1134,6 +1134,9 @@ class mldap:
             
 # all is well, close connection
     def disconnect(self):
-        """ Close the AD/LDAP Connection. """
-        self.ldap_client.unbind()
-
+        """ Close the AD/LDAP Connection if it is open. """
+        try:
+            self.ldap_client.unbind()
+        except ldap.LDAPError:
+            pass # Prevent crashes on multiple disconnect() calls.
+            
