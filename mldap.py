@@ -429,6 +429,8 @@ class mldap:
        specified user. """
        mod_attrs = [( ldap.MOD_REPLACE, attribute, value )]
        dn=self.get_dn_from_sn(samaccountname)
+       if dn is None:
+           raise NoSuchObject(samaccountname)
        self.ldap_client.modify_s(dn, mod_attrs)
 
        
@@ -1140,3 +1142,8 @@ class mldap:
         except ldap.LDAPError:
             pass # Prevent crashes on multiple disconnect() calls.
             
+
+class NoSuchObject(Exception):
+    """ Provide a custom exception to call when we have no user to
+    perform an action upon. """
+    pass
