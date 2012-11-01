@@ -1061,6 +1061,11 @@ class mldap:
         self.ldap_client.rename_s( ",".join(srcDN),
                                    rdn,
                                    destOU )
+
+    def renameUser(self, old_username, new_username):
+        ad.replace(old_username, 'sAMAccountName', new_username)
+        UPN_suffix = ad.getattr(new_username, 'userPrincipalName').split('@')[1]
+        ad.replace(new_username, 'userPrincipalname', '%s@%s'%  (new_username, UPN_suffix))
                                    
 ################
 # PROTOTYPE USER OBJ FUNCTIONS
