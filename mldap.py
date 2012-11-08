@@ -19,6 +19,7 @@
 import os
 import sys
 import ldap
+from ldap.controls import SimplePagedResultsControl
 import datetime
 import ConfigParser
 import base64 # for password obfuscation
@@ -408,16 +409,52 @@ class mldap:
 
     def listou(self, 
                base=None, 
-               objectType='samaccountname'):
+               objectType='samaccountname',
+               pageSize=5000):
         """ List all sAMAccountNames of a given OU """
         if base is None:
             base = self.LDAP_USER_BASE
         search = '%s=*' % (objectType)
-        result = self.ldap_client.search_s(
-            base,ldap.SCOPE_SUBTREE,search,['sAMAccountName'])
+
+        lc = SimplePagedResultsControl(
+            ldap.LDAP_CONTROL_PAGE_OID,True,(pageSize,''))
+
+        msgid = self.ldap_client.search_ext(
+            base,
+            ldap.SCOPE_SUBTREE,
+            search,
+            serverctrls=[lc])
+
         results=[]
-        for n in result:
-            results.append(n[1]['sAMAccountName'][0])
+        pages = 0
+        
+        while True:
+            pages += 1
+            rtype, rdata, rmsgid, serverctrls = self.ldap_client.result3(msgid)
+            for dn,entry in rdata:
+                if dn is not None:
+                    results += entry['sAMAccountName']
+
+            pctrls = [
+              c
+              for c in serverctrls
+              if c.controlType == ldap.LDAP_CONTROL_PAGE_OID
+            ]
+            if pctrls:
+                est, cookie = pctrls[0].controlValue
+                if cookie:
+                    lc.controlValue = (pageSize, cookie)
+                    msgid = self.ldap_client.search_ext(
+                        base, 
+                        ldap.SCOPE_SUBTREE, 
+                        search,
+                        serverctrls=[lc])
+                else:
+                    break
+            else:
+                print "Warning:  Server ignores RFC 2696 control."
+                break
+
         return results
 
 #
@@ -436,9 +473,9 @@ class mldap:
        
     def delete_user(self, samaccountname):
         """ Attempt to delete a given dn by referencing samaccountname. """
-        dn = self.get_dn_from_sn(samaccountname)
-
-        self.ldap_client.delete(dn)
+        if (self.exists(samaccountname)):
+            dn = self.get_dn_from_sn(samaccountname)
+            self.ldap_client.delete(dn)
             
 # 
 # Create a new account with specified attributes set.
