@@ -8,6 +8,6 @@ setup(name='mldap',
       author_email='meyersh@morningside.edu',
       url='http://github.com/meyersh/mldap',
       version='1.0',
-      py_modules=['mldap'],
+      packages=['mldap'],
       requires=['ldap'],
       )
