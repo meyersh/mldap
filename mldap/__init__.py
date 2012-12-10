@@ -1323,7 +1323,7 @@ class mldap:
             if user[0] == None:
                 continue
             attr_set = self.unpack_attributes(user)
-            u = ADuser(attr_set['sAMAccountName'], attr_set)
+            u = ADuser(attr_set['sAMAccountName'], attributes=attr_set, ad_obj=self)
             g.members.append(u)
         return g
 
