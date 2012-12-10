@@ -83,40 +83,137 @@ def read_creds(credsfile = None):
         
 #creds = read_creds()
 
+def flatten(l):
+    ''' given a list of no elements, return None.
+    given a list of one element, return just the element,
+    given a list of more than one element, return the list. '''
+
+    if not l:
+        return None
+
+    if isinstance(l, list):
+        if len(l) > 1:
+            return l
+        else:
+            return l[0]
+        
+    return l
+
 ################################################################################
 # ADuser & ADGroup Classes
 ################################################################################
 
 class ADuser(object):
-    # Todo: Merge this with the compare.py ADuser... 
-    writable_attributes = [
-        'sn',
-        'givenName',
-        'mail',
-        'employeeNumber']
 
-    def __init__(self, samaccountname, attrs, ad_obj=None):
+    attr_map = {
+        'firstname': 'givenName',
+        'initial': 'initials',
+        'lastname':'sn',
+        'idno': 'employeeNumber',
+        'email': 'mail',
+        'distinguishedName': 'distinguishedName'
+        }
 
-        self.ad = ad_obj
+    ''' attributes that are allowed to be written back to AD '''
+    writable_attributes = [ 'mail',
+                            'givenName',
+                            'initials',
+                            'sn',
+                            'employeeNumber',
+                            'userPrincipalName'
+        ]
 
-        for attr_key, attr_val in attrs.items():
-            if attr_val.__class__ is list().__class__:
-                l = len(attr_val)
-                if l == 1:
-                    attrs[attr_key] = attr_val[0]
-                elif l == 0:
-                    attrs[attr_key] = None
+    # def deduce_usertype_from_dn(self):
+    #     """ Attempt to deduce the usertype field from the dn.
+    #     @return: the usertype OR the head of the DN (sans const.BASE)
+    #     if no type matches. """
 
-        self.__dict__.update(attrs)
+    #     o = self.dn
+    #     o = o.replace(','+const.BASE, '') # remove BASE portion
+    #     o = ",".join(o.split(',')[1:]) # remove CN= head portion
+        
+    #     if o in const.rev_usertype_map:
+    #         return const.rev_usertype_map[o]
+        
+
+    #     ''' usertype is not recognized, 
+    #     return partial OU head for debug. '''
+    #     return self.dn.replace(','+const.BASE, '')
+
+    def _get_info(self):
+        ad_attributes = {'givenName':None, 'initials':None, 'sn':None, 'employeeNumber':None, 'mail':None, 
+                            'memberOf':None, 'distinguishedName':None}
+
+        ad_attributes.update(ad.getattr(self.username, ad_attributes.keys()))
+                       
+        self.firstname = ad_attributes['givenName']
+        self.initial   = ad_attributes['initials']
+        self.lastname  = ad_attributes['sn']
+        self.idno      = ad_attributes['employeeNumber']
+        self.email     = ad_attributes['mail']
+        self.dn        = ad_attributes['distinguishedName']
+        self.expired   = self.adcon.isexpired(self.username)
+        self.usertype  = self.deduce_usertype_from_dn()
+
+        self.guid      = self.adcon.getattr(self.username, 'objectGUID')
+
+        if ad.isdisabled(self.username):
+            self.networkstatus = "DISABLED"
+        else:
+            self.networkstatus = "ENABLED"
+
+    def __init__(self, username, ad_obj = None, attributes = None):
+
+        if ad_obj is None:
+            self.adcon = mldap()
+        else:
+            self.adcon = ad_obj
+
+        self.username = username
+
+        if self.adcon.exists(username) is False:
+            self.initiated = False
+            return
+
+        #self._get_info()
+
+        if attributes is not None:
+            self.__dict__.update(attributes)
+        else:
+            self.__dict__.update(self.adcon.getattr(username))
+
+        self.initiated = True
+
+    def refresh(self):
+        self.__init__(self.username)
+
+    def commit(self):
+        ''' commit back attribute changes to active directory '''
+        if self.initiated is False or self.adcon.exists(self.username) is False:
+            return
+
+        ''' This will handle all easy attributes '''
+        for attr in self.writable_attributes:
+            if self.__getattribute__(attr) != self.adcon.getattr(self.username, ad_attr):
+                print "%s: mismatch: %s" % (self.sAMAccountName, attr)
+                #adcon.replace(self.username, ad_attr, self.__getattribute__(attr))
+
+        ''' Handle username changes? '''
+        
+
+    def update_from(self, other):
+        ''' update user attributes from another user type. '''
+        assert isinstance(self, other.__class__)
 
     def __repr__(self):
         if 'cn' in self.__dict__:
             return "<ADUser: '%(cn)s' (%(sAMAccountName)s)>" % self.__dict__
         else:
             return "<AD User Object(uninitialized)>"
-
+        
     def __eq__(self, other):
-        return self.objectSid == other.objectSid
+        return self.objectGUID == other.objectGUID
+
 
 class ADgroup(object):
     def __init__(self, groupname, dn, ad_obj=None):
@@ -1108,6 +1205,92 @@ class mldap:
 # PROTOTYPE USER OBJ FUNCTIONS
 ############
 
+    def getattr_by_filter(self, key, value):
+        ''' Return a list of object of type ADUser given an attribute
+        to search on. '''
+        search = None
+        if key == 'objectGUID':
+            search = "(&(!(objectClass=computer))(%s=%s))" % (str(key), ldap.filter.escape_filter_chars(str(value)))
+        else:
+            search = "(&(!(objectClass=computer))(%s=%s))" % (str(key), str(value))
+
+        searchpath='dc=mustang,dc=morningside,dc=edu'
+
+        result = self.ldap_client.search_s(searchpath,ldap.SCOPE_SUBTREE,search,[])
+
+        attributes=result[0][1] # Because they nest it so darn deep!
+
+        ret = []
+
+        for (dn, attrs) in result:
+            if dn is None:
+                continue
+
+            for attr in attrs:
+                attrs[attr] = flatten(attrs[attr])
+                
+            ret.append(attrs)
+            
+            
+
+        return ret
+
+
+    def getuser_by_filter(self, matchfilter, attr="*"):
+        """ Lookup attributes on a given user(s) by filter. If 
+        not specified, return all attributes.
+        getattr(objectGUID, [attr1, attr2, ...])
+        getattr(objectGUID) 
+
+        @return: attr, a dictionary with attr keys. Multiple results 
+        are returned as a list."""
+
+
+        # "ad.exists()"
+        """ Check if an account exists based on the presence of a sAMAccountName 
+        @return: True/False """
+        search = "%s" % ldap.filter.escape_filter_chars(str(matchfilter))
+        searchpath='dc=mustang,dc=morningside,dc=edu'
+
+        result = self.ldap_client.search_s(searchpath,ldap.SCOPE_SUBTREE,search,['objectGUID'])
+        if "objectGUID" not in result[0][1]:
+            return None
+
+        # Determine if attr is str or list type:
+        if type(attr).__name__ == 'str':
+            attrs = [attr]
+        elif type(attr).__name__ == 'list':
+            attrs=attr
+          
+        result = self.ldap_client.search_s(searchpath,ldap.SCOPE_SUBTREE,search,attrs)
+
+        attributes=result[0][1] # Because they nest it so darn deep!
+
+        # This reorganizes the results. Normally the ldap module allows you to get
+        # many accounts' worth of results back in one go so we end up with a 
+        # dictionary of lists. Ugh, we're only getting one back here so this 
+        # cleans up a lot. If we passed multiple attributes we get a dict back
+        # if we passed one we get a list with one item...
+
+        result = {}
+        for i in attributes:
+            if len(attributes[i]) == 0:
+                result[i] = None
+            if len(attributes[i]) == 1:
+                result[i] = attributes[i][0]
+
+            elif len(attributes[i]) > 1:
+                result[i] = attributes[i]
+
+        if (attr == "*" or type(attr) == type(list())):
+            return result
+        else:
+            if attr in result:
+                return result[attr]
+            else:
+                return None
+         
+
     def getuser(self, samaccountname_or_dn):
         """ Return an object of type ADUser for a given sAMAccountName or DN """
         if '=' in samaccountname_or_dn:
@@ -1117,37 +1300,10 @@ class mldap:
             
         attributes = self.getattr(samaccountname)
         if attributes is not None:
-            return ADuser(samaccountname, self.getattr(samaccountname))
+            return ADuser(samaccountname, ad_obj=self, 
+                          attributes=self.getattr(samaccountname))
         else:
             return None
-
-    def update_user(self, ADuser_object):
-        """ Given an ADuser object, retrieve a reference instance and
-        update all fields which differ. (The password field obviously
-        poses a certain challenge. This code is primarily prototyping.
-        """
-        writable_attrs = ('description',
-                          'department',
-                          'title',
-                          'mail',
-                          'sAMAccountName',
-                          'name',
-                          'phoneNumber',
-                          'info',
-                          'homeDirectory',
-                          'givenName',
-                          'employeeNumber')
-
-        ad_state = self.getuser( ADuser_object.sAMAccountName )
-
-        for attr in writable_attrs:
-            if (attr in ADuser_object.__dict__ and attr in ad_state.__dict__):
-                if ADuser_object.__dict__[attr] != ad_state.__dict__[attr]:
-                    print "%s has been updated!" % attr
-            elif (attr in ADuser_object.__dict__ 
-                  and attr not in ad_state.__dict__):
-                print "%s has been updated!" % attr
-        pass
         
     def getgroup(self, group):
         g = ADgroup(group, self.get_dn_from_sn(group))
