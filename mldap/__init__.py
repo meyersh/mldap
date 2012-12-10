@@ -18,6 +18,7 @@
 ################################################################################
 import os
 import sys
+import warnings
 import ldap
 from ldap.controls import SimplePagedResultsControl
 import datetime
@@ -27,6 +28,17 @@ import base64 # for password obfuscation
 import pprint
 
 __version__ = "1.0.3"
+
+# Enable all warnings
+warnings.simplefilter('default')
+
+def deprecated(message=None):
+    ''' Call this function with an optional message to raise a warning
+    for a depracated function. '''
+    if message is None:
+        message = "This function is deprecated."
+    warnings.warn(message, DeprecationWarning, stacklevel=3)
+
 
 #
 ## Read up the configuration stuff (or die trying)
