@@ -1,0 +1,1 @@
+Search.setIndex({objects:{},terms:{index:0,search:0,welcom:0,modul:[0,1,2],indic:0,content:0,aim:1,tabl:0,document:0,page:0,mldap:[0,2]},objtypes:{},titles:["Welcome to mldap&#8217;s documentation!","AIMS Module","Mldap Module"],objnames:{},filenames:["index","aims","mldap"]})

@@ -1,0 +1,623 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Mldap Module &mdash; mldap beta documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     'beta',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="mldap beta documentation" href="index.html" />
+    <link rel="prev" title="Welcome to mldap’s documentation!" href="index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Welcome to mldap’s documentation!"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">mldap beta documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="module-mldap">
+<span id="mldap-module"></span><span id="mldap"></span><h1>Mldap Module<a class="headerlink" href="#module-mldap" title="Permalink to this headline">¶</a></h1>
+<dl class="exception">
+<dt id="mldap.NoSuchObject">
+<em class="property">exception </em><tt class="descclassname">mldap.</tt><tt class="descname">NoSuchObject</tt><a class="reference internal" href="_modules/mldap.html#NoSuchObject"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mldap.NoSuchObject" title="Permalink to this definition">¶</a></dt>
+<dd><p>Provide a custom exception to call when we have no user to
+perform an action upon.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="mldap.deprecated">
+<tt class="descclassname">mldap.</tt><tt class="descname">deprecated</tt><big>(</big><em>message=None</em><big>)</big><a class="reference internal" href="_modules/mldap.html#deprecated"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mldap.deprecated" title="Permalink to this definition">¶</a></dt>
+<dd><p>Call this function with an optional message to raise a warning
+for a depracated function.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="mldap.flatten">
+<tt class="descclassname">mldap.</tt><tt class="descname">flatten</tt><big>(</big><em>l</em><big>)</big><a class="reference internal" href="_modules/mldap.html#flatten"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mldap.flatten" title="Permalink to this definition">¶</a></dt>
+<dd><p>given a list of no elements, return None.
+given a list of one element, return just the element,
+given a list of more than one element, return the list.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="mldap.mldap">
+<em class="property">class </em><tt class="descclassname">mldap.</tt><tt class="descname">mldap</tt><big>(</big><em>**args</em><big>)</big><a class="reference internal" href="_modules/mldap.html#mldap"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mldap.mldap" title="Permalink to this definition">¶</a></dt>
+<dd><p>This class is specifically designed to connect to and interact with 
+our Active Directory via LDAP.</p>
+<dl class="docutils">
+<dt>Named parameters: </dt>
+<dd><ul class="first last simple">
+<li>credsfile</li>
+<li>LDAP_USERNAME</li>
+<li>LDAP_PASSWORD</li>
+<li>LDAP_SERVER</li>
+<li>LDAP_BASE</li>
+<li>LDAP_USER_BASE</li>
+<li>LDAP_GROUP_BASE</li>
+<li>LDAP_DOMAIN</li>
+</ul>
+</dd>
+</dl>
+<dl class="method">
+<dt id="mldap.mldap.add_to_group">
+<tt class="descname">add_to_group</tt><big>(</big><em>sAMAccountName</em>, <em>groupCN</em><big>)</big><a class="reference internal" href="_modules/mldap.html#mldap.add_to_group"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mldap.mldap.add_to_group" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add a user to a given group</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="mldap.mldap.alive">
+<tt class="descname">alive</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/mldap.html#mldap.alive"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mldap.mldap.alive" title="Permalink to this definition">¶</a></dt>
+<dd><p>A quick test to verify if a connection is still active.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="mldap.mldap.checkidno">
+<tt class="descname">checkidno</tt><big>(</big><em>idno</em><big>)</big><a class="reference internal" href="_modules/mldap.html#mldap.checkidno"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mldap.mldap.checkidno" title="Permalink to this definition">¶</a></dt>
+<dd><p>Taking an IDNO as only argument, does a search in the
+employeeNumber LDAP field for this value.</p>
+<p>&#64;param idno: string containing the users 7-digit ID.NO</p>
+<dl class="docutils">
+<dt>&#64;return:</dt>
+<dd>sAMAccountName or None</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="mldap.mldap.checkuser">
+<tt class="descname">checkuser</tt><big>(</big><em>samaccountname</em><big>)</big><a class="reference internal" href="_modules/mldap.html#mldap.checkuser"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mldap.mldap.checkuser" title="Permalink to this definition">¶</a></dt>
+<dd><p>Superceded by self.getattr()</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="mldap.mldap.create">
+<tt class="descname">create</tt><big>(</big><em>samaccountname</em>, <em>cn</em>, <em>path</em>, <em>CONSTattributes={}</em><big>)</big><a class="reference internal" href="_modules/mldap.html#mldap.create"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mldap.mldap.create" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a new account with the specified attributes set.
+All &#8216;attributes&#8217; are expected to be LDAP attributes except
+for attributes[&#8216;password&#8217;] which is properly converted for
+AD&#8217;s unicodePwd field.</p>
+<p>&#64;type samaccountname: String
+&#64;param samaccountname: Username to create</p>
+<p>&#64;type cn: String
+&#64;param cn: CN of new account (only the CN=(whatever))</p>
+<p>&#64;type path: String
+&#64;param path: ldap path of OU for new account</p>
+<p>&#64;type CONSTattributes: Dictionary
+&#64;param CONSTattributes: A dict of LDAP attributes for the new account.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="mldap.mldap.create_group">
+<tt class="descname">create_group</tt><big>(</big><em>groupname</em>, <em>path</em>, <em>members=</em><span class="optional">[</span><span class="optional">]</span><big>)</big><a class="reference internal" href="_modules/mldap.html#mldap.create_group"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mldap.mldap.create_group" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a new group with the specified members.</p>
+<p>&#64;type groupname: String
+&#64;param groupname: Group name to create</p>
+<p>&#64;type path: String
+&#64;param path: base CN of new group</p>
+<p>&#64;type members: List
+&#64;param members: A list of members to pre-populate group.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="mldap.mldap.delete_user">
+<tt class="descname">delete_user</tt><big>(</big><em>samaccountname</em><big>)</big><a class="reference internal" href="_modules/mldap.html#mldap.delete_user"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mldap.mldap.delete_user" title="Permalink to this definition">¶</a></dt>
+<dd><p>Attempt to delete a given dn by referencing samaccountname.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="mldap.mldap.disconnect">
+<tt class="descname">disconnect</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/mldap.html#mldap.disconnect"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mldap.mldap.disconnect" title="Permalink to this definition">¶</a></dt>
+<dd><p>Close the AD/LDAP Connection if it is open.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="mldap.mldap.exists">
+<tt class="descname">exists</tt><big>(</big><em>samaccountname</em><big>)</big><a class="reference internal" href="_modules/mldap.html#mldap.exists"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mldap.mldap.exists" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if an account exists based on the presence of a sAMAccountName 
+&#64;return: True/False</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="mldap.mldap.get_dn_from_idno">
+<tt class="descname">get_dn_from_idno</tt><big>(</big><em>idno</em><big>)</big><a class="reference internal" href="_modules/mldap.html#mldap.get_dn_from_idno"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mldap.mldap.get_dn_from_idno" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a DN for a given ID.NO</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="mldap.mldap.get_dn_from_sn">
+<tt class="descname">get_dn_from_sn</tt><big>(</big><em>samaccountname</em><big>)</big><a class="reference internal" href="_modules/mldap.html#mldap.get_dn_from_sn"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mldap.mldap.get_dn_from_sn" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a DN for a given sAMAccountName</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="mldap.mldap.get_idno_from_sn">
+<tt class="descname">get_idno_from_sn</tt><big>(</big><em>sAMAccountName</em><big>)</big><a class="reference internal" href="_modules/mldap.html#mldap.get_idno_from_sn"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mldap.mldap.get_idno_from_sn" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a given SN&#8217;s idno.
+&#64;return:  None if an error occurs.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="mldap.mldap.get_sn_from_dn">
+<tt class="descname">get_sn_from_dn</tt><big>(</big><em>DN</em><big>)</big><a class="reference internal" href="_modules/mldap.html#mldap.get_sn_from_dn"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mldap.mldap.get_sn_from_dn" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the sAMAccountName from DN</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="mldap.mldap.getattr">
+<tt class="descname">getattr</tt><big>(</big><em>samaccountname</em>, <em>attr='*'</em><big>)</big><a class="reference internal" href="_modules/mldap.html#mldap.getattr"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mldap.mldap.getattr" title="Permalink to this definition">¶</a></dt>
+<dd><p>Lookup attributes on a given sAMAccountName. If 
+not specified, return all attributes.
+getattr(sAMAccountName, [attr1, attr2, ...])
+getattr(samaccountname)</p>
+<p>&#64;param attr:  String containing one LDAP attribute, a list of 
+LDAP attributes, or a string containing &#8216;*&#8217; to return all 
+attributes.</p>
+<p>&#64;return: attr, a dictionary with attr keys. Multiple results 
+are returned as a list.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="mldap.mldap.getattr_by_filter">
+<tt class="descname">getattr_by_filter</tt><big>(</big><em>key</em>, <em>value</em><big>)</big><a class="reference internal" href="_modules/mldap.html#mldap.getattr_by_filter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mldap.mldap.getattr_by_filter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a list of object of type ADUser given an attribute
+to search on.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="mldap.mldap.getattr_old">
+<tt class="descname">getattr_old</tt><big>(</big><em>samaccountname</em>, <em>attr='*'</em><big>)</big><a class="reference internal" href="_modules/mldap.html#mldap.getattr_old"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mldap.mldap.getattr_old" title="Permalink to this definition">¶</a></dt>
+<dd><p>Lookup attributes on a given sAMAccountName. If 
+not specified, return all attributes.
+getattr(sAMAccountName, [attr1, attr2, ...])
+getattr(samaccountname)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="mldap.mldap.getmattr">
+<tt class="descname">getmattr</tt><big>(</big><em>samaccountname</em>, <em>attr='*'</em><big>)</big><a class="reference internal" href="_modules/mldap.html#mldap.getmattr"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mldap.mldap.getmattr" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a multiple, multivalued, attributes from AD.</p>
+<p>When working with results from LDAP the scheme is as follows:</p>
+<p>C{results[r][n]{attr}[values]}</p>
+<dl class="docutils">
+<dt>Where:</dt>
+<dd><ul class="first last simple">
+<li>C{r = result number}</li>
+<li>C{n[0] = dn of result}</li>
+<li>C{n[1] = search attributes}</li>
+<li>C{{attr} = dictionary of attribute:[values]}</li>
+<li>C{[values] = list of values (always in list form)}</li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="mldap.mldap.getuac">
+<tt class="descname">getuac</tt><big>(</big><em>samaccountname</em><big>)</big><a class="reference internal" href="_modules/mldap.html#mldap.getuac"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mldap.mldap.getuac" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieve the userAccountControl field for a given user.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">ad</span><span class="o">.</span><span class="n">getuac</span><span class="p">(</span><span class="s">&#39;shaunt&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">flags</span><span class="p">()</span>
+<span class="go">[&#39;ADS_UF_NORMAL_ACCOUNT&#39;]</span>
+</pre></div>
+</div>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">ad</span><span class="o">.</span><span class="n">getuac</span><span class="p">(</span><span class="s">&#39;shaunt&#39;</span><span class="p">)</span>
+<span class="go">&lt;&lt;class &#39;mldap.uac&#39;&gt; object ([&#39;ADS_UF_NORMAL_ACCOUNT&#39;])&gt;</span>
+</pre></div>
+</div>
+<p>&#64;return: a uac object derived from these flags.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="mldap.mldap.getuser">
+<tt class="descname">getuser</tt><big>(</big><em>samaccountname_or_dn</em><big>)</big><a class="reference internal" href="_modules/mldap.html#mldap.getuser"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mldap.mldap.getuser" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return an object of type ADUser for a given sAMAccountName or DN</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="mldap.mldap.getuser_by_filter">
+<tt class="descname">getuser_by_filter</tt><big>(</big><em>matchfilter</em>, <em>attr='*'</em><big>)</big><a class="reference internal" href="_modules/mldap.html#mldap.getuser_by_filter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mldap.mldap.getuser_by_filter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Lookup attributes on a given user(s) by filter. If 
+not specified, return all attributes.
+getattr(objectGUID, [attr1, attr2, ...])
+getattr(objectGUID)</p>
+<p>&#64;return: attr, a dictionary with attr keys. Multiple results 
+are returned as a list.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="mldap.mldap.group">
+<tt class="descname">group</tt><big>(</big><em>groupCN</em><big>)</big><a class="reference internal" href="_modules/mldap.html#mldap.group"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mldap.mldap.group" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a list of a given groups&#8217; members</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="mldap.mldap.isdisabled">
+<tt class="descname">isdisabled</tt><big>(</big><em>samaccountname</em><big>)</big><a class="reference internal" href="_modules/mldap.html#mldap.isdisabled"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mldap.mldap.isdisabled" title="Permalink to this definition">¶</a></dt>
+<dd><p>Is a given SN disabled?</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="mldap.mldap.isexpired">
+<tt class="descname">isexpired</tt><big>(</big><em>samaccountname</em><big>)</big><a class="reference internal" href="_modules/mldap.html#mldap.isexpired"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mldap.mldap.isexpired" title="Permalink to this definition">¶</a></dt>
+<dd><p>Is a given SN expired? 
+accountExpires is the number of ticks (100n/s [.0000001s])
+since 12:00AM Jan 1, 1601. Thanks, Microsoft. 
+Additionally, it&#8217;s in UTC</p>
+<p>If a user object in Active Directory has never had an
+expiration date, the accountExpires attribute is set to a huge
+number. The actual value is 2^63 - 1, or
+9,223,372,036,854,775,807.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="mldap.mldap.isset">
+<tt class="descname">isset</tt><big>(</big><em>samaccountname</em>, <em>attr</em>, <em>value</em><big>)</big><a class="reference internal" href="_modules/mldap.html#mldap.isset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mldap.mldap.isset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Verify sAMAccountName object has attr set to value.
+Except: ldap.NO_SUCH_ATTRIBUTE</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="mldap.mldap.listou">
+<tt class="descname">listou</tt><big>(</big><em>base=None</em>, <em>objectType='samaccountname'</em>, <em>pageSize=5000</em><big>)</big><a class="reference internal" href="_modules/mldap.html#mldap.listou"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mldap.mldap.listou" title="Permalink to this definition">¶</a></dt>
+<dd><p>List all sAMAccountNames of a given OU</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="mldap.mldap.move">
+<tt class="descname">move</tt><big>(</big><em>srcDN</em>, <em>destDN</em><big>)</big><a class="reference internal" href="_modules/mldap.html#mldap.move"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mldap.mldap.move" title="Permalink to this definition">¶</a></dt>
+<dd><p>(srcdn, newrdn, destdn)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="mldap.mldap.move2">
+<tt class="descname">move2</tt><big>(</big><em>samaccountname</em>, <em>destOU</em><big>)</big><a class="reference internal" href="_modules/mldap.html#mldap.move2"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mldap.mldap.move2" title="Permalink to this definition">¶</a></dt>
+<dd><p>This uses code not available in the older version of
+LDAP - consider it testing/alpha. 
+param samaccountname: The accountname to search and move.
+param destOU: the folder to move the samaccountname into.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="bp">self</span><span class="o">.</span><span class="n">ldap_client</span><span class="o">.</span><span class="n">rename_s</span><span class="p">(</span>
+<span class="go">    &#39;CN=Jane D Doe,OU=Users,DC=domain,DC=com&#39;, </span>
+<span class="go">    &#39;CN=Jane D Doe&#39;, </span>
+<span class="go">    &#39;OU=OldUsers,DC=domain,DC=com&#39;</span>
+<span class="go">    )</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="mldap.mldap.remove_from_group">
+<tt class="descname">remove_from_group</tt><big>(</big><em>sAMAccountName</em>, <em>groupCN</em><big>)</big><a class="reference internal" href="_modules/mldap.html#mldap.remove_from_group"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mldap.mldap.remove_from_group" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove a user from a given group.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="mldap.mldap.replace">
+<tt class="descname">replace</tt><big>(</big><em>samaccountname</em>, <em>attribute</em>, <em>value</em><big>)</big><a class="reference internal" href="_modules/mldap.html#mldap.replace"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mldap.mldap.replace" title="Permalink to this definition">¶</a></dt>
+<dd><p>Replace/Set the value of a given attribute for the 
+specified user.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="mldap.mldap.replace_by_idno">
+<tt class="descname">replace_by_idno</tt><big>(</big><em>idno</em>, <em>attribute</em>, <em>value</em><big>)</big><a class="reference internal" href="_modules/mldap.html#mldap.replace_by_idno"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mldap.mldap.replace_by_idno" title="Permalink to this definition">¶</a></dt>
+<dd><p>Replace/Set the value of a given attribute for the specified user (by IDNO).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="mldap.mldap.resetpw">
+<tt class="descname">resetpw</tt><big>(</big><em>sAMAccountName</em>, <em>newpass</em><big>)</big><a class="reference internal" href="_modules/mldap.html#mldap.resetpw"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mldap.mldap.resetpw" title="Permalink to this definition">¶</a></dt>
+<dd><p>Wraps around L{self.replace()} to reset a given 
+password. Note: This attempts the administrative 
+reset with whatever user this module binds with so 
+make sure that it has the proper AD permissions.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="mldap.mldap.setuac">
+<tt class="descname">setuac</tt><big>(</big><em>samaccountname</em>, <em>new_uac</em><big>)</big><a class="reference internal" href="_modules/mldap.html#mldap.setuac"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mldap.mldap.setuac" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the uac field for a given user.  
+&#64;param new_uac: The decimal representation of the
+userAccountControl field (actually, any input is ok as long as
+it converts properly with str() which at this time means
+string, uac object, or int. This means &#8216;512&#8217;, 512, uac(512)
+are all acceptable.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="mldap.read_creds">
+<tt class="descclassname">mldap.</tt><tt class="descname">read_creds</tt><big>(</big><em>credsfile=None</em><big>)</big><a class="reference internal" href="_modules/mldap.html#read_creds"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mldap.read_creds" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read in the config file and return its data as a dictionary.</p>
+<p>Example:
+[LDAP]
+SERVER=ldap://my.server.url
+<a class="reference external" href="mailto:USERNAME=administrator&#37;&#52;&#48;my&#46;domain&#46;url">USERNAME=administrator<span>&#64;</span>my<span>&#46;</span>domain<span>&#46;</span>url</a>
+PASSWORD=some_base64_encoded_str=
+BASE=dc=my,dc=domain,dc=url
+DOMAIN=my.domain.url
+USER_BASE=ou=Users,dc=my,dc=domain,dc=url
+GROUP_BASE=ou=Groups,dc=my,dc=domain,dc=url
+...</p>
+<p>&#64;return: Dictionary with keys(): (&#8216;LDAP_USERNAME&#8217;, &#8216;LDAP_PASSWORD&#8217;,
+&#8216;LDAP_SERVER&#8217;, &#8216;LDAP_BASE&#8217;, &#8216;LDAP_DOMAIN&#8217;)</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="mldap.uac">
+<em class="property">class </em><tt class="descclassname">mldap.</tt><tt class="descname">uac</tt><big>(</big><em>value=0</em><big>)</big><a class="reference internal" href="_modules/mldap.html#uac"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mldap.uac" title="Permalink to this definition">¶</a></dt>
+<dd><p>A quick definition of some constants in the 
+userAccountControl attribute.</p>
+<dl class="attribute">
+<dt id="mldap.uac.ADS_UF_ACCOUNTDISABLE">
+<tt class="descname">ADS_UF_ACCOUNTDISABLE</tt><em class="property"> = 2</em><a class="headerlink" href="#mldap.uac.ADS_UF_ACCOUNTDISABLE" title="Permalink to this definition">¶</a></dt>
+<dd><p>The home directory is required.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="mldap.uac.ADS_UF_DONT_EXPIRE_PASSWD">
+<tt class="descname">ADS_UF_DONT_EXPIRE_PASSWD</tt><em class="property"> = 65536</em><a class="headerlink" href="#mldap.uac.ADS_UF_DONT_EXPIRE_PASSWD" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is an MNS logon account.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="mldap.uac.ADS_UF_DONT_REQUIRE_PREAUTH">
+<tt class="descname">ADS_UF_DONT_REQUIRE_PREAUTH</tt><em class="property"> = 4194304</em><a class="headerlink" href="#mldap.uac.ADS_UF_DONT_REQUIRE_PREAUTH" title="Permalink to this definition">¶</a></dt>
+<dd><p>The user password has expired. This flag is created by the
+system using data from the Pwd-Last-Set attribute and the domain
+policy.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="mldap.uac.ADS_UF_ENCRYPTED_TEXT_PASSWORD_ALLOWED">
+<tt class="descname">ADS_UF_ENCRYPTED_TEXT_PASSWORD_ALLOWED</tt><em class="property"> = 128</em><a class="headerlink" href="#mldap.uac.ADS_UF_ENCRYPTED_TEXT_PASSWORD_ALLOWED" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is an account for users whose primary account is in
+another domain. This account provides user access to this domain,
+but not to any domain that trusts this domain. Also known as a
+local user account.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="mldap.uac.ADS_UF_HOMEDIR_REQUIRED">
+<tt class="descname">ADS_UF_HOMEDIR_REQUIRED</tt><em class="property"> = 8</em><a class="headerlink" href="#mldap.uac.ADS_UF_HOMEDIR_REQUIRED" title="Permalink to this definition">¶</a></dt>
+<dd><p>The account is currently locked out.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="mldap.uac.ADS_UF_INTERDOMAIN_TRUST_ACCOUNT">
+<tt class="descname">ADS_UF_INTERDOMAIN_TRUST_ACCOUNT</tt><em class="property"> = 2048</em><a class="headerlink" href="#mldap.uac.ADS_UF_INTERDOMAIN_TRUST_ACCOUNT" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is a computer account for a computer that is a member of this
+domain.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="mldap.uac.ADS_UF_LOCKOUT">
+<tt class="descname">ADS_UF_LOCKOUT</tt><em class="property"> = 16</em><a class="headerlink" href="#mldap.uac.ADS_UF_LOCKOUT" title="Permalink to this definition">¶</a></dt>
+<dd><p>No password is required.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="mldap.uac.ADS_UF_MNS_LOGON_ACCOUNT">
+<tt class="descname">ADS_UF_MNS_LOGON_ACCOUNT</tt><em class="property"> = 131072</em><a class="headerlink" href="#mldap.uac.ADS_UF_MNS_LOGON_ACCOUNT" title="Permalink to this definition">¶</a></dt>
+<dd><p>The user must log on using a smart card.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="mldap.uac.ADS_UF_NORMAL_ACCOUNT">
+<tt class="descname">ADS_UF_NORMAL_ACCOUNT</tt><em class="property"> = 512</em><a class="headerlink" href="#mldap.uac.ADS_UF_NORMAL_ACCOUNT" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is a permit to trust account for a system domain that trusts
+other domains.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="mldap.uac.ADS_UF_NOT_DELEGATED">
+<tt class="descname">ADS_UF_NOT_DELEGATED</tt><em class="property"> = 1048576</em><a class="headerlink" href="#mldap.uac.ADS_UF_NOT_DELEGATED" title="Permalink to this definition">¶</a></dt>
+<dd><p>Restrict this principal to use only Data Encryption Standard
+(DES) encryption types for keys.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="mldap.uac.ADS_UF_PASSWD_CANT_CHANGE">
+<tt class="descname">ADS_UF_PASSWD_CANT_CHANGE</tt><em class="property"> = 64</em><a class="headerlink" href="#mldap.uac.ADS_UF_PASSWD_CANT_CHANGE" title="Permalink to this definition">¶</a></dt>
+<dd><p>The user can send an encrypted password.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="mldap.uac.ADS_UF_PASSWD_NOTREQD">
+<tt class="descname">ADS_UF_PASSWD_NOTREQD</tt><em class="property"> = 32</em><a class="headerlink" href="#mldap.uac.ADS_UF_PASSWD_NOTREQD" title="Permalink to this definition">¶</a></dt>
+<dd><p>The user cannot change the password.  Note You cannot assign
+the permission settings of PASSWD_CANT_CHANGE by directly modifying
+the UserAccountControl attribute. For more information and a code
+example that shows how to prevent a user from changing the password,
+see User Cannot Change Password.
+(<a class="reference external" href="http://msdn.microsoft.com/en-us/library/aa746508(v=vs.85).aspx">http://msdn.microsoft.com/en-us/library/aa746508(v=vs.85).aspx</a> )</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="mldap.uac.ADS_UF_PASSWORD_EXPIRED">
+<tt class="descname">ADS_UF_PASSWORD_EXPIRED</tt><em class="property"> = 8388608</em><a class="headerlink" href="#mldap.uac.ADS_UF_PASSWORD_EXPIRED" title="Permalink to this definition">¶</a></dt>
+<dd><p>The account is enabled for delegation. This is a
+security-sensitive setting; accounts with this option enabled
+should be strictly controlled. This setting enables a service
+running under the account to assume a client identity and
+authenticate as that user to other remote servers on the
+network.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="mldap.uac.ADS_UF_SCRIPT">
+<tt class="descname">ADS_UF_SCRIPT</tt><em class="property"> = 1</em><a class="headerlink" href="#mldap.uac.ADS_UF_SCRIPT" title="Permalink to this definition">¶</a></dt>
+<dd><p>The user account is disabled.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="mldap.uac.ADS_UF_SERVER_TRUST_ACCOUNT">
+<tt class="descname">ADS_UF_SERVER_TRUST_ACCOUNT</tt><em class="property"> = 8192</em><a class="headerlink" href="#mldap.uac.ADS_UF_SERVER_TRUST_ACCOUNT" title="Permalink to this definition">¶</a></dt>
+<dd><p>The password for this account will never expire.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="mldap.uac.ADS_UF_SMARTCARD_REQUIRED">
+<tt class="descname">ADS_UF_SMARTCARD_REQUIRED</tt><em class="property"> = 262144</em><a class="headerlink" href="#mldap.uac.ADS_UF_SMARTCARD_REQUIRED" title="Permalink to this definition">¶</a></dt>
+<dd><p>The service account (user or computer account), under which a
+service runs, is trusted for Kerberos delegation. Any such service
+can impersonate a client requesting the service.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="mldap.uac.ADS_UF_TEMP_DUPLICATE_ACCOUNT">
+<tt class="descname">ADS_UF_TEMP_DUPLICATE_ACCOUNT</tt><em class="property"> = 256</em><a class="headerlink" href="#mldap.uac.ADS_UF_TEMP_DUPLICATE_ACCOUNT" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is a default account type that represents a typical user.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="mldap.uac.ADS_UF_TRUSTED_FOR_DELEGATION">
+<tt class="descname">ADS_UF_TRUSTED_FOR_DELEGATION</tt><em class="property"> = 524288</em><a class="headerlink" href="#mldap.uac.ADS_UF_TRUSTED_FOR_DELEGATION" title="Permalink to this definition">¶</a></dt>
+<dd><p>The security context of the user will not be delegated to a
+service even if the service account is set as trusted for Kerberos
+delegation.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="mldap.uac.ADS_UF_USE_DES_KEY_ONLY">
+<tt class="descname">ADS_UF_USE_DES_KEY_ONLY</tt><em class="property"> = 2097152</em><a class="headerlink" href="#mldap.uac.ADS_UF_USE_DES_KEY_ONLY" title="Permalink to this definition">¶</a></dt>
+<dd><p>This account does not require Kerberos pre-authentication for
+logon.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="mldap.uac.ADS_UF_WORKSTATION_TRUST_ACCOUNT">
+<tt class="descname">ADS_UF_WORKSTATION_TRUST_ACCOUNT</tt><em class="property"> = 4096</em><a class="headerlink" href="#mldap.uac.ADS_UF_WORKSTATION_TRUST_ACCOUNT" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is a computer account for a system backup domain controller that
+is a member of this domain.</p>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="mldap.uac.flags">
+<em class="property">classmethod </em><tt class="descname">flags</tt><big>(</big><em>value</em><big>)</big><a class="reference internal" href="_modules/mldap.html#uac.flags"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mldap.uac.flags" title="Permalink to this definition">¶</a></dt>
+<dd><p>iterate through flags (using dir()) and return a human-legible
+rendition of account flags.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="mldap.uac.instance_flags">
+<tt class="descname">instance_flags</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/mldap.html#uac.instance_flags"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mldap.uac.instance_flags" title="Permalink to this definition">¶</a></dt>
+<dd><p>&#64;return: a list of user-readable flags which are set.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="mldap.uac.uac_value">
+<tt class="descname">uac_value</tt><em class="property"> = 0</em><a class="headerlink" href="#mldap.uac.uac_value" title="Permalink to this definition">¶</a></dt>
+<dd><p>The logon script is executed.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="index.html"
+                        title="previous chapter">Welcome to mldap&#8217;s documentation!</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/mldap.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Welcome to mldap’s documentation!"
+             >previous</a> |</li>
+        <li><a href="index.html">mldap beta documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, Shaun Meyer.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>
