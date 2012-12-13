@@ -1,3 +1,4 @@
+
 #!/usr/bin/env python
 ################################################################################
 # Shaun Meyer - June, 2009
@@ -49,18 +50,19 @@ CREDSFILE = '/etc/ldap.creds'
 def read_creds(credsfile = None):
     """ Read in the config file and return its data as a dictionary.
     
-    Example:
-    [LDAP]
-    SERVER=ldap://my.server.url
-    USERNAME=administrator@my.domain.url
-    PASSWORD=some_base64_encoded_str=
-    BASE=dc=my,dc=domain,dc=url
-    DOMAIN=my.domain.url
-    USER_BASE=ou=Users,dc=my,dc=domain,dc=url
-    GROUP_BASE=ou=Groups,dc=my,dc=domain,dc=url
-    ...
+    Example::
 
-    @return: Dictionary with keys(): ('LDAP_USERNAME', 'LDAP_PASSWORD',
+      [LDAP]
+      SERVER=ldap://my.server.url
+      USERNAME=administrator@my.domain.url
+      PASSWORD=some_base64_encoded_str=
+      BASE=dc=my,dc=domain,dc=url
+      DOMAIN=my.domain.url
+      USER_BASE=ou=Users,dc=my,dc=domain,dc=url
+      GROUP_BASE=ou=Groups,dc=my,dc=domain,dc=url
+      ...
+
+    :return: Dictionary with keys(): ('LDAP_USERNAME', 'LDAP_PASSWORD',
     'LDAP_SERVER', 'LDAP_BASE', 'LDAP_DOMAIN')
     """
 
@@ -137,7 +139,7 @@ class ADuser(object):
 
     # def deduce_usertype_from_dn(self):
     #     """ Attempt to deduce the usertype field from the dn.
-    #     @return: the usertype OR the head of the DN (sans const.BASE)
+    #     :return: the usertype OR the head of the DN (sans const.BASE)
     #     if no type matches. """
 
     #     o = self.dn
@@ -353,7 +355,7 @@ class uac(object):
         return ret    
 
     def instance_flags(self):
-        """ @return: a list of user-readable flags which are set. """
+        """ :return: a list of user-readable flags which are set. """
         return uac.flags(self.uac_value)
 
     def set(self, flag):
@@ -420,8 +422,8 @@ class mldap:
         """ Read default creds file. If keyword credentials are specified 
         during object instantiation, those superceded the file. 
 
-        @type creds: Dictionary
-        @param creds: Dictionary which optionally contains LDAP_USERNAME,
+        :type creds: Dictionary
+        :param dict creds: Dictionary which optionally contains LDAP_USERNAME,
         LDAP_PASSWORD, or LDAP_SERVER keys to override what is loaded from 
         the credsfile variable.
         """
@@ -473,9 +475,9 @@ class mldap:
         """ Taking an IDNO as only argument, does a search in the
         employeeNumber LDAP field for this value.
 
-        @param idno: string containing the users 7-digit ID.NO
+        :param idno: string containing the users 7-digit ID.NO
 
-        @return:
+        :return:
             sAMAccountName or None
         """
         searchpath=self.LDAP_USER_BASE
@@ -499,7 +501,7 @@ class mldap:
 
     def exists(self, samaccountname):
         """ Check if an account exists based on the presence of a sAMAccountName 
-        @return: True/False """
+        :return: True/False """
         searchpath=self.LDAP_BASE
         search = 'samaccountname='+str(samaccountname)
         result = self.ldap_client.search_s(
@@ -599,17 +601,17 @@ class mldap:
         for attributes['password'] which is properly converted for
         AD's unicodePwd field. 
 
-        @type samaccountname: String
-        @param samaccountname: Username to create
+        :type samaccountname: String
+        :param samaccountname: Username to create
         
-        @type cn: String
-        @param cn: CN of new account (only the CN=(whatever))
+        :type cn: String
+        :param cn: CN of new account (only the CN=(whatever))
         
-        @type path: String
-        @param path: ldap path of OU for new account
+        :type path: String
+        :param path: ldap path of OU for new account
 
-        @type CONSTattributes: Dictionary
-        @param CONSTattributes: A dict of LDAP attributes for the new account.
+        :type CONSTattributes: Dictionary
+        :param CONSTattributes: A dict of LDAP attributes for the new account.
         
         """
 
@@ -660,14 +662,14 @@ class mldap:
     def create_group(self, groupname, path, members=[]):
         """ Create a new group with the specified members.
 
-        @type groupname: String
-        @param groupname: Group name to create
+        :type groupname: String
+        :param groupname: Group name to create
         
-        @type path: String
-        @param path: base CN of new group
+        :type path: String
+        :param path: base CN of new group
         
-        @type members: List
-        @param members: A list of members to pre-populate group.
+        :type members: List
+        :param members: A list of members to pre-populate group.
         
         """
 
@@ -782,7 +784,7 @@ class mldap:
 
     def get_idno_from_sn(self, sAMAccountName):
         """ Return a given SN's idno.
-        @return:  None if an error occurs."""
+        :return:  None if an error occurs."""
         try:
             idno = self.getattr(sAMAccountName, 'employeeNumber')
             
@@ -1036,11 +1038,11 @@ class mldap:
         getattr(sAMAccountName, [attr1, attr2, ...])
         getattr(samaccountname) 
 
-        @param attr:  String containing one LDAP attribute, a list of 
+        :param attr:  String containing one LDAP attribute, a list of 
         LDAP attributes, or a string containing '*' to return all 
         attributes.
 
-        @return: attr, a dictionary with attr keys. Multiple results 
+        :return: attr, a dictionary with attr keys. Multiple results 
         are returned as a list."""
 
         if not self.exists(samaccountname):
@@ -1094,7 +1096,7 @@ class mldap:
         >>> ad.getuac('shaunt')
         <<class 'mldap.uac'> object (['ADS_UF_NORMAL_ACCOUNT'])>
 
-        @return: a uac object derived from these flags. 
+        :return: a uac object derived from these flags. 
         """
         userAccountControl_flags = int(
             self.getattr(samaccountname, 'userAccountControl'))
@@ -1108,7 +1110,7 @@ class mldap:
 
     def setuac(self, samaccountname, new_uac):
         """ Set the uac field for a given user.  
-        @param new_uac: The decimal representation of the
+        :param new_uac: The decimal representation of the
         userAccountControl field (actually, any input is ok as long as
         it converts properly with str() which at this time means
         string, uac object, or int. This means '512', 512, uac(512)
@@ -1254,13 +1256,13 @@ class mldap:
         getattr(objectGUID, [attr1, attr2, ...])
         getattr(objectGUID) 
 
-        @return: attr, a dictionary with attr keys. Multiple results 
+        :return: attr, a dictionary with attr keys. Multiple results 
         are returned as a list."""
 
 
         # "ad.exists()"
         """ Check if an account exists based on the presence of a sAMAccountName 
-        @return: True/False """
+        :return: True/False """
         search = "%s" % ldap.filter.escape_filter_chars(str(matchfilter))
         searchpath='dc=mustang,dc=morningside,dc=edu'
 

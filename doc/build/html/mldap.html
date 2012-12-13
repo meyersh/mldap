@@ -111,11 +111,16 @@ our Active Directory via LDAP.</p>
 <tt class="descname">checkidno</tt><big>(</big><em>idno</em><big>)</big><a class="reference internal" href="_modules/mldap.html#mldap.checkidno"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mldap.mldap.checkidno" title="Permalink to this definition">¶</a></dt>
 <dd><p>Taking an IDNO as only argument, does a search in the
 employeeNumber LDAP field for this value.</p>
-<p>&#64;param idno: string containing the users 7-digit ID.NO</p>
-<dl class="docutils">
-<dt>&#64;return:</dt>
-<dd>sAMAccountName or None</dd>
-</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>idno</strong> &#8211; string containing the users 7-digit ID.NO</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">sAMAccountName or None</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
@@ -131,26 +136,39 @@ employeeNumber LDAP field for this value.</p>
 All &#8216;attributes&#8217; are expected to be LDAP attributes except
 for attributes[&#8216;password&#8217;] which is properly converted for
 AD&#8217;s unicodePwd field.</p>
-<p>&#64;type samaccountname: String
-&#64;param samaccountname: Username to create</p>
-<p>&#64;type cn: String
-&#64;param cn: CN of new account (only the CN=(whatever))</p>
-<p>&#64;type path: String
-&#64;param path: ldap path of OU for new account</p>
-<p>&#64;type CONSTattributes: Dictionary
-&#64;param CONSTattributes: A dict of LDAP attributes for the new account.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>samaccountname</strong> (<em>String</em>) &#8211; Username to create</li>
+<li><strong>cn</strong> (<em>String</em>) &#8211; CN of new account (only the CN=(whatever))</li>
+<li><strong>path</strong> (<em>String</em>) &#8211; ldap path of OU for new account</li>
+<li><strong>CONSTattributes</strong> (<em>Dictionary</em>) &#8211; A dict of LDAP attributes for the new account.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
 <dt id="mldap.mldap.create_group">
 <tt class="descname">create_group</tt><big>(</big><em>groupname</em>, <em>path</em>, <em>members=</em><span class="optional">[</span><span class="optional">]</span><big>)</big><a class="reference internal" href="_modules/mldap.html#mldap.create_group"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mldap.mldap.create_group" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create a new group with the specified members.</p>
-<p>&#64;type groupname: String
-&#64;param groupname: Group name to create</p>
-<p>&#64;type path: String
-&#64;param path: base CN of new group</p>
-<p>&#64;type members: List
-&#64;param members: A list of members to pre-populate group.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>groupname</strong> (<em>String</em>) &#8211; Group name to create</li>
+<li><strong>path</strong> (<em>String</em>) &#8211; base CN of new group</li>
+<li><strong>members</strong> (<em>List</em>) &#8211; A list of members to pre-populate group.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
@@ -169,7 +187,7 @@ AD&#8217;s unicodePwd field.</p>
 <dt id="mldap.mldap.exists">
 <tt class="descname">exists</tt><big>(</big><em>samaccountname</em><big>)</big><a class="reference internal" href="_modules/mldap.html#mldap.exists"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mldap.mldap.exists" title="Permalink to this definition">¶</a></dt>
 <dd><p>Check if an account exists based on the presence of a sAMAccountName 
-&#64;return: True/False</p>
+:return: True/False</p>
 </dd></dl>
 
 <dl class="method">
@@ -188,7 +206,7 @@ AD&#8217;s unicodePwd field.</p>
 <dt id="mldap.mldap.get_idno_from_sn">
 <tt class="descname">get_idno_from_sn</tt><big>(</big><em>sAMAccountName</em><big>)</big><a class="reference internal" href="_modules/mldap.html#mldap.get_idno_from_sn"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mldap.mldap.get_idno_from_sn" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return a given SN&#8217;s idno.
-&#64;return:  None if an error occurs.</p>
+:return:  None if an error occurs.</p>
 </dd></dl>
 
 <dl class="method">
@@ -204,11 +222,25 @@ AD&#8217;s unicodePwd field.</p>
 not specified, return all attributes.
 getattr(sAMAccountName, [attr1, attr2, ...])
 getattr(samaccountname)</p>
-<p>&#64;param attr:  String containing one LDAP attribute, a list of 
-LDAP attributes, or a string containing &#8216;*&#8217; to return all 
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>attr</strong> &#8211; String containing one LDAP attribute, a list of</td>
+</tr>
+</tbody>
+</table>
+<p>LDAP attributes, or a string containing &#8216;*&#8217; to return all 
 attributes.</p>
-<p>&#64;return: attr, a dictionary with attr keys. Multiple results 
-are returned as a list.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">attr, a dictionary with attr keys. Multiple results</td>
+</tr>
+</tbody>
+</table>
+<p>are returned as a list.</p>
 </dd></dl>
 
 <dl class="method">
@@ -258,7 +290,14 @@ getattr(samaccountname)</p>
 <span class="go">&lt;&lt;class &#39;mldap.uac&#39;&gt; object ([&#39;ADS_UF_NORMAL_ACCOUNT&#39;])&gt;</span>
 </pre></div>
 </div>
-<p>&#64;return: a uac object derived from these flags.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">a uac object derived from these flags.</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
@@ -274,8 +313,15 @@ getattr(samaccountname)</p>
 not specified, return all attributes.
 getattr(objectGUID, [attr1, attr2, ...])
 getattr(objectGUID)</p>
-<p>&#64;return: attr, a dictionary with attr keys. Multiple results 
-are returned as a list.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">attr, a dictionary with attr keys. Multiple results</td>
+</tr>
+</tbody>
+</table>
+<p>are returned as a list.</p>
 </dd></dl>
 
 <dl class="method">
@@ -370,7 +416,7 @@ make sure that it has the proper AD permissions.</p>
 <dt id="mldap.mldap.setuac">
 <tt class="descname">setuac</tt><big>(</big><em>samaccountname</em>, <em>new_uac</em><big>)</big><a class="reference internal" href="_modules/mldap.html#mldap.setuac"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mldap.mldap.setuac" title="Permalink to this definition">¶</a></dt>
 <dd><p>Set the uac field for a given user.  
-&#64;param new_uac: The decimal representation of the
+:param new_uac: The decimal representation of the
 userAccountControl field (actually, any input is ok as long as
 it converts properly with str() which at this time means
 string, uac object, or int. This means &#8216;512&#8217;, 512, uac(512)
@@ -383,18 +429,26 @@ are all acceptable.</p>
 <dt id="mldap.read_creds">
 <tt class="descclassname">mldap.</tt><tt class="descname">read_creds</tt><big>(</big><em>credsfile=None</em><big>)</big><a class="reference internal" href="_modules/mldap.html#read_creds"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mldap.read_creds" title="Permalink to this definition">¶</a></dt>
 <dd><p>Read in the config file and return its data as a dictionary.</p>
-<p>Example:
-[LDAP]
+<p>Example:</p>
+<div class="highlight-python"><pre>[LDAP]
 SERVER=ldap://my.server.url
-<a class="reference external" href="mailto:USERNAME=administrator&#37;&#52;&#48;my&#46;domain&#46;url">USERNAME=administrator<span>&#64;</span>my<span>&#46;</span>domain<span>&#46;</span>url</a>
+USERNAME=administrator@my.domain.url
 PASSWORD=some_base64_encoded_str=
 BASE=dc=my,dc=domain,dc=url
 DOMAIN=my.domain.url
 USER_BASE=ou=Users,dc=my,dc=domain,dc=url
 GROUP_BASE=ou=Groups,dc=my,dc=domain,dc=url
-...</p>
-<p>&#64;return: Dictionary with keys(): (&#8216;LDAP_USERNAME&#8217;, &#8216;LDAP_PASSWORD&#8217;,
-&#8216;LDAP_SERVER&#8217;, &#8216;LDAP_BASE&#8217;, &#8216;LDAP_DOMAIN&#8217;)</p>
+...</pre>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Dictionary with keys(): (&#8216;LDAP_USERNAME&#8217;, &#8216;LDAP_PASSWORD&#8217;,</td>
+</tr>
+</tbody>
+</table>
+<p>&#8216;LDAP_SERVER&#8217;, &#8216;LDAP_BASE&#8217;, &#8216;LDAP_DOMAIN&#8217;)</p>
 </dd></dl>
 
 <dl class="class">
@@ -556,7 +610,14 @@ rendition of account flags.</p>
 <dl class="method">
 <dt id="mldap.uac.instance_flags">
 <tt class="descname">instance_flags</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/mldap.html#uac.instance_flags"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mldap.uac.instance_flags" title="Permalink to this definition">¶</a></dt>
-<dd><p>&#64;return: a list of user-readable flags which are set.</p>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">a list of user-readable flags which are set.</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="attribute">
