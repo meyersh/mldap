@@ -692,7 +692,7 @@ class mldap:
         try:
             self.ldap_client.add_s(dn, add_record)
             for m in group_members:
-                add_to_group(m, groupname)
+                self.add_to_group(m, groupname)
         except ldap.CONSTRAINT_VIOLATION, info:
             print info
 
