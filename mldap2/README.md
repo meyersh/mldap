@@ -1,10 +1,11 @@
 # MLDAP Doc
 
-`mldap2` is a thin wrapper around the python-ldap library written to operate 
-against our 2003-based Active Directory.
-
-Specifically, it is used to programmatically create, delete, modify, and
-query active directory via the LDAP protocol.
+`mldap2` is a thin wrapper around the python-ldap library written to
+operate against our 2003-based Active Directory.Specifically, it is
+used to programmatically create, delete, modify, and query active
+directory via the LDAP protocol by lifting the programmer away from
+the context of working with LDAP and filters to working with user
+attributes and groups.
 
 # GOTCHA'S
 
