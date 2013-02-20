@@ -21,6 +21,7 @@ import os
 import sys
 import warnings
 import ldap
+import ldap.filter
 from ldap.controls import SimplePagedResultsControl
 import datetime
 
@@ -69,7 +70,8 @@ class ADuser(object):
         'lastname':'sn',
         'idno': 'employeeNumber',
         'email': 'mail',
-        'distinguishedName': 'distinguishedName'
+        'distinguishedName': 'distinguishedName',
+        'username': 'sAMAccountName'
         }
 
     ''' attributes that are allowed to be written back to AD '''
@@ -78,7 +80,8 @@ class ADuser(object):
                             'initials',
                             'sn',
                             'employeeNumber',
-                            'userPrincipalName'
+                            'userPrincipalName',
+                            'sAMAccountName'
         ]
 
     # def deduce_usertype_from_dn(self):
@@ -150,14 +153,16 @@ class ADuser(object):
         if self.initiated is False or self.adcon.exists(self.username) is False:
             return
 
-        ''' This will handle all easy attributes '''
-        for attr in self.writable_attributes:
-            if self.__getattribute__(attr) != self.adcon.getattr(self.username, ad_attr):
-                print "%s: mismatch: %s" % (self.sAMAccountName, attr)
-                #adcon.replace(self.username, ad_attr, self.__getattribute__(attr))
+        ''' This will handle all easy attributes. Even sAMAccountName changes. 
+        if the "new" account already exists, this throws an ldap.ALREADY_EXISTS exception.
+        '''
 
-        ''' Handle username changes? '''
-        
+        for attr in self.writable_attributes:
+            if getattr(self, attr, None) != self.adcon.getattr(self.username, attr):
+                print "%s: mismatch: %s" % (self.sAMAccountName, attr)
+
+                self.adcon.replace_by_objectguid(self.objectGUID, attr, self.__getattribute__(attr))
+
 
     def update_from(self, other):
         ''' update user attributes from another user type. '''
@@ -172,6 +177,11 @@ class ADuser(object):
     def __eq__(self, other):
         return self.objectGUID == other.objectGUID
 
+    def replace(self, attr, value):
+        if (attr in self.writable_attributes and self.initiated):
+            setattr(self, attr, value)
+            self.commit()
+            
 
 class ADgroup(object):
     def __init__(self, groupname, dn, ad_obj=None):
@@ -526,6 +536,17 @@ class mldap:
            raise NoSuchObject(samaccountname)
        self.ldap_client.modify_s(dn, mod_attrs)
 
+
+    def replace_by_objectguid(self, objectGUID, attribute, value):
+       """ Replace/Set the value of a given attribute for the 
+       specified user. """
+       mod_attrs = [( ldap.MOD_REPLACE, attribute, value )]
+       dn=self.get_dn_from_objectguid(objectGUID)
+       if dn is None:
+           raise NoSuchObject(objectGUID)
+       self.ldap_client.modify_s(dn, mod_attrs)
+
+
        
     def delete_user(self, samaccountname):
         """ Attempt to delete a given dn by referencing samaccountname. """
@@ -667,6 +688,21 @@ class mldap:
         """ Return a DN for a given sAMAccountName """
         searchpath=self.LDAP_BASE
         search = 'samaccountname='+str(samaccountname)
+        result = self.ldap_client.search_s(
+            searchpath,
+            ldap.SCOPE_SUBTREE,
+            search,
+            ['distinguishedName'])
+
+        if not len(result):
+            return 0
+        else:
+            return result[0][0] # We need a more reliable way to get this info.
+
+    def get_dn_from_objectguid(self, objectguid):
+        """ Return a DN for a given sAMAccountName """
+        searchpath=self.LDAP_BASE
+        search = 'objectGUID=%s' % ldap.filter.escape_filter_chars(str(objectguid))
         result = self.ldap_client.search_s(
             searchpath,
             ldap.SCOPE_SUBTREE,
@@ -1194,6 +1230,13 @@ class mldap:
 
         return ret
 
+    def getusers_by_filter(self, key, value):
+        attributes = self.getattr_by_filter(key, value)
+        users = []
+        for attribute in attributes:
+            users.append(ADuser(attribute['sAMAccountName'], ad_obj=self, attributes=attribute))
+
+        return users;
 
     def getuser_by_filter(self, matchfilter, attr="*"):
         """ Lookup attributes on a given user(s) by filter. If 
