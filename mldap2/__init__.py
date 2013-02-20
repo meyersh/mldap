@@ -52,7 +52,7 @@ def flatten(l):
 
     if isinstance(l, list):
         if len(l) > 1:
-            return l
+           return l
         else:
             return l[0]
         
@@ -1238,60 +1238,14 @@ class mldap:
 
         return users;
 
-    def getuser_by_filter(self, matchfilter, attr="*"):
-        """ Lookup attributes on a given user(s) by filter. If 
-        not specified, return all attributes.
-        getattr(objectGUID, [attr1, attr2, ...])
-        getattr(objectGUID) 
-
-        :return: attr, a dictionary with attr keys. Multiple results 
-        are returned as a list."""
-
-
-        # "ad.exists()"
-        """ Check if an account exists based on the presence of a sAMAccountName 
-        :return: True/False """
-        search = "%s" % ldap.filter.escape_filter_chars(str(matchfilter))
-        searchpath='dc=mustang,dc=morningside,dc=edu'
-
-        result = self.ldap_client.search_s(searchpath,ldap.SCOPE_SUBTREE,search,['objectGUID'])
-        if "objectGUID" not in result[0][1]:
+    def getuser_by_filter(self, key, value):
+        users = self.getusers_by_filter(key, value)
+        if len(users) == 1:
+            return users[0]
+        elif len(users) == 0:
             return None
-
-        # Determine if attr is str or list type:
-        if type(attr).__name__ == 'str':
-            attrs = [attr]
-        elif type(attr).__name__ == 'list':
-            attrs=attr
-          
-        result = self.ldap_client.search_s(searchpath,ldap.SCOPE_SUBTREE,search,attrs)
-
-        attributes=result[0][1] # Because they nest it so darn deep!
-
-        # This reorganizes the results. Normally the ldap module allows you to get
-        # many accounts' worth of results back in one go so we end up with a 
-        # dictionary of lists. Ugh, we're only getting one back here so this 
-        # cleans up a lot. If we passed multiple attributes we get a dict back
-        # if we passed one we get a list with one item...
-
-        result = {}
-        for i in attributes:
-            if len(attributes[i]) == 0:
-                result[i] = None
-            if len(attributes[i]) == 1:
-                result[i] = attributes[i][0]
-
-            elif len(attributes[i]) > 1:
-                result[i] = attributes[i]
-
-        if (attr == "*" or type(attr) == type(list())):
-            return result
         else:
-            if attr in result:
-                return result[attr]
-            else:
-                return None
-         
+            raise Exception("TooManyObjects from getuser by filter")
 
     def getuser(self, samaccountname_or_dn):
         """ Return an object of type ADUser for a given sAMAccountName or DN """
