@@ -58,6 +58,12 @@ def flatten(l):
         
     return l
 
+def unicodePasswd(str_passwd):
+    """ Encode password as unicode for AD."""
+    unicode1 = unicode("\"" + str_passwd + "\"", "iso-8859-1")
+    unicode2 = unicode1.encode("utf-16-le")
+    return unicode2 # Our unicoded password.
+
 ################################################################################
 # ADuser & ADGroup Classes
 ################################################################################
@@ -766,25 +772,6 @@ class mldap:
         return result[0][0] # Return the first DN from our results 
                             # (no way we got two, right??)
 
-#
-# Return a given sn's idno
-#
-
-    def get_idno_from_sn(self, sAMAccountName):
-        """ Return a given SN's idno.
-        :return:  None if an error occurs."""
-        try:
-            idno = self.getattr(sAMAccountName, 'employeeNumber')
-            
-            return idno
-
-        except KeyError:
-            return None
-
-#
-#
-#
-
     def resetpw(self, sAMAccountName, newpass):
         """ Wraps around L{self.replace()} to reset a given 
         password. Note: This attempts the administrative 
@@ -798,7 +785,14 @@ class mldap:
 
         self.replace(sAMAccountName, 'unicodePwd', unicodePwd)
 
+    def resetpw_by_objectguid(self, objectGUID, newpass):
+        """ Perform an administrative password reset. To perform this
+        reset, the account that was used to bind to ldap must have
+        permissions in AD to reset the password belonging to
+        `objectGUID` object. """
 
+        self.replace_by_objectguid(objectGUID, 
+                                   'unicodePwd', unicodePasswd(newpass))
 
 
 
