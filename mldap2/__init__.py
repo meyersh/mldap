@@ -150,18 +150,25 @@ class ADuser(object):
 
     def commit(self):
         ''' commit back attribute changes to active directory '''
-        if self.initiated is False or self.adcon.exists(self.username) is False:
+        if self.initiated is False or self.adcon.getuser_by_filter("objectGUID", self.objectGUID) is None:
             return
 
         ''' This will handle all easy attributes. Even sAMAccountName changes. 
         if the "new" account already exists, this throws an ldap.ALREADY_EXISTS exception.
         '''
+        
 
         for attr in self.writable_attributes:
-            if getattr(self, attr, None) != self.adcon.getattr(self.username, attr):
-                print "%s: mismatch: %s" % (self.sAMAccountName, attr)
+            value = getattr(self, attr, None)
+            
+            if value and self.adcon.compare_by_objectguid(self.objectGUID, attr, value) is False:
+                self.adcon.replace_by_objectguid(self.objectGUID, attr, value)
+                
+        # for attr in self.writable_attributes:
+        #     if getattr(self, attr, None) != getattr(self.adcon.getuser_by_filter("objectGUID", self.objectGUID), attr, None):
+        #         if __debug__: print "%s: mismatch: %s" % (self.sAMAccountName, attr)
 
-                self.adcon.replace_by_objectguid(self.objectGUID, attr, self.__getattribute__(attr))
+        #        self.adcon.replace_by_objectguid(self.objectGUID, attr, self.__getattribute__(attr))
 
 
     def update_from(self, other):
@@ -902,15 +909,19 @@ class mldap:
 #
 # exception: ldap.NO_SUCH_ATTRIBUTE
 
-    def isset(self, samaccountname, attr, value):
+    def compare_by_objectguid(self, objectguid, attr, value):
         """ Verify sAMAccountName object has attr set to value.
         Except: ldap.NO_SUCH_ATTRIBUTE"""
 
-        dn = self.get_dn_from_sn(samaccountname)
+        dn = self.get_dn_from_objectguid(objectguid)
         try:
-            return self.ldap_client.compare_s(dn, attr, value)
+            return self.ldap_client.compare_s(dn, attr, value) == 1
         except ldap.NO_SUCH_ATTRIBUTE:
-            return 0
+            return false
+
+    def compare(self, samaccountname, attr, value):
+        compare_by_objectguid(self.getattr(samaccountname, 'objectGUID'), attr, value)
+
 
 #
 # Return a multivalued attribute from AD
@@ -1156,11 +1167,11 @@ class mldap:
             return result
 
     def move(self, srcDN, destDN):
-        ''' (srcdn, newrdn, destdn) ''' 
-        ''' self.ldap_client.rename_s(
-          'CN=Joe D Doe,OU=Users,DC=domain,DC=com',
-          'CN=Joe D Doe',
-          'OU=OldUsers,DC=domain,DC=com'
+        ''' (srcdn, newrdn, destdn) 
+        self.ldap_client.rename_s(
+            'CN=Joe D Doe,OU=Users,DC=domain,DC=com',
+            'CN=Joe D Doe',
+            'OU=OldUsers,DC=domain,DC=com'
         ) '''
 
         rdn = srcDN.split(',')[0]
@@ -1171,10 +1182,11 @@ class mldap:
         self.ldap_client.rename_s( srcDN, rdn, destDN )
 
     def move2(self, samaccountname, destOU):
-        """ This uses code not available in the older version of
-        LDAP - consider it testing/alpha. 
+        """ This uses code not available until python-ldap v2.3.2. On RHEL/CentOS
+        5.8, repositories only have python-ldap v2.2.0.  
+
         param samaccountname: The accountname to search and move.
-        param destOU: the folder to move the samaccountname into. 
+        param destOU: the folder to move the samaccountname into.
 
         >>> self.ldap_client.rename_s(
             'CN=Jane D Doe,OU=Users,DC=domain,DC=com', 
@@ -1192,9 +1204,12 @@ class mldap:
                                    destOU )
 
     def renameUser(self, old_username, new_username):
-        ad.replace(old_username, 'sAMAccountName', new_username)
-        UPN_suffix = ad.getattr(new_username, 'userPrincipalName').split('@')[1]
-        ad.replace(new_username, 'userPrincipalname', '%s@%s'%  (new_username, UPN_suffix))
+        u = self.getuser(old_username)
+        if u:
+            u.userPrincipalName = u.userPrincipalName.replace(old_username, new_username)
+            u.sAMAccountName = new_username
+            u.commit()
+        
                                    
 ################
 # PROTOTYPE USER OBJ FUNCTIONS
