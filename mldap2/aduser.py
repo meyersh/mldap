@@ -1,5 +1,7 @@
 class ADuser(object):
     """ 
+    An Active Directory-backed user representation object.
+
     :param username: sAMAccountName of the user.
     :param ad_obj: connected object.
     :type ad_obj: :mod:`mldap2`
@@ -120,7 +122,8 @@ class ADuser(object):
         self.__init__(self.username)
 
     def commit(self):
-        ''' commit back attribute changes to active directory '''
+        ''' commit back attribute changes to active directory 
+        .. note:: deprecated now that __setattr__ has been added. '''
         if self.initiated is False or self.adcon.getuser_by_filter("objectGUID", self.objectGUID) is None:
             return
 
@@ -152,6 +155,16 @@ class ADuser(object):
         
     def __eq__(self, other):
         return self.objectGUID == other.objectGUID
+
+    def __setattr__(self, attr, value):
+        """ Sugar over adUserObj.sAMAccountName = "new name" to 
+        commit it back immediately, if possible, to AD. """
+
+        self.__dict__[attr] = value
+        if attr in self.writable_attributes:
+            if self.adcon:
+                self.adcon.replace_by_objectguid(self.objectGUID,
+                                                 attr, value)
 
     def replace(self, attr, value):
         ''' Replace a given attribute with a new value and commit any

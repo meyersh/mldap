@@ -2,6 +2,10 @@ import ldap
 import ldap.filter
 from ldap.controls import SimplePagedResultsControl
 
+from uac import uac
+from aduser import ADuser
+from adgroup import ADgroup
+
 import datetime
 import warnings
 
