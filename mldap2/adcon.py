@@ -1,6 +1,6 @@
 import ldap
 import ldap.filter
-from ldap.controls import SimplePagedResultsControl
+#from ldap.controls import SimplePagedResultsControl
 
 from uac     import uac
 from aduser  import ADuser
@@ -880,8 +880,11 @@ class mldap:
 # PROTOTYPE USER OBJ FUNCTIONS
 ############
 
-    def getattrs_by_filter(self, key, value):
+    def getattrs_by_filter(self, key, value, attrlist=None, base=None):
         ''' Search AD by attribute.
+
+        :param attrlist: The attributes desired (None for all)
+        :type attrlist: list
 
         :return: A list of result dictionaries.
 
@@ -893,30 +896,97 @@ class mldap:
             ['top', 'person', 'organizationalPerson', 'user']
 
         '''
+        if base is None:
+            base = self.LDAP_USER_BASE
+        
         search = None
-        if key == 'objectGUID':
+
+        # To handle searches for None values (to answer who DOESN'T
+        # have an e-mail attribute set?), the search filter should use
+        # the not-present operator: (!attribute_name=*) to test for
+        # the absence of an attribute
+        if value is None:
+            search = "(&(!(objectClass=computer))(!(%s=*)))" % str(key)
+
+        elif key == 'objectGUID':
             search = "(&(!(objectClass=computer))(%s=%s))" % (str(key), ldap.filter.escape_filter_chars(str(value)))
         else:
             search = "(&(!(objectClass=computer))(%s=%s))" % (str(key), str(value))
 
-        searchpath='dc=mustang,dc=morningside,dc=edu'
+        pageSize = 500
 
-        result = self.ldap_client.search_s(searchpath,ldap.SCOPE_SUBTREE,search,[])
+        lc = ldap.controls.SimplePagedResultsControl(
+            ldap.LDAP_CONTROL_PAGE_OID,True,(pageSize,''))
 
-        attributes=result[0][1] # Because they nest it so darn deep!
+        msgid = self.ldap_client.search_ext(
+            base,
+            ldap.SCOPE_SUBTREE,
+            search,
+            serverctrls=[lc],
+            attrlist=attrlist)
 
-        ret = []
+        results=[]
+        pages = 0
 
-        for (dn, attrs) in result:
-            if dn is None:
-                continue
+        while True:
+            pages += 1
+            rtype, rdata, rmsgid, serverctrls = self.ldap_client.result3(msgid)
 
-            for attr in attrs:
-                attrs[attr] = flatten(attrs[attr])
+            # Each result tuple (rdata) is of the form (dn, attrs),
+            # where dn is a string containing the DN (distinguished
+            # name) of the entry, and attrs is a dictionary containing
+            # the attributes associated with the entry. The keys of
+            # attrs are strings, and the associated values are lists
+            # of strings.
+
+            for (dn,entry) in rdata:
+                if dn is not None:
+                    results.append(entry)
+
+            pctrls = [
+              c
+              for c in serverctrls
+              if c.controlType == ldap.LDAP_CONTROL_PAGE_OID
+            ]
+            if pctrls:
+                est, cookie = pctrls[0].controlValue
+                if cookie:
+                    lc.controlValue = (pageSize, cookie)
+                    msgid = self.ldap_client.search_ext(
+                        base, 
+                        ldap.SCOPE_SUBTREE, 
+                        search,
+                        serverctrls=[lc],
+                        attrlist=attrlist)
+                else:
+                    break
+            else:
+                print "Warning:  Server ignores RFC 2696 control."
+                break
+
+        for result in results:
+            for attr in result:
+                result[attr] = flatten(result[attr])
+
+        return results
+
+        # result = self.ldap_client.search_s(searchpath,ldap.SCOPE_SUBTREE,search,[])
+
+        # attributes=result[0][1] # Because they nest it so darn deep!
+
+        # ret = []
+
+        # for (dn, attrs) in results:
+        #     if dn is None:
+        #         continue
+
+
+        #     for attr in attrs:
+        #         attrs[attr] = flatten(attrs[attr])
                 
-            ret.append(attrs)
+        #     ret.append(attrs)
             
-        return ret
+        # return ret
 
     def getattr_by_filter(self, key, value, attr):
         """ Retrieve an attribute by filter (key=val) 
