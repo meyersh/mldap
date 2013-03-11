@@ -143,55 +143,18 @@ class mldap:
 # Peruse a given base OU and return all sAMAccountNames...
 #
 
-    def listou(self, 
-               base=None, 
-               objectType='samaccountname',
-               pageSize=5000):
+    def listou(self,
+               base=None,
+               objectType='sAMAccountName',
+               pageSize=1000):
         """ List all sAMAccountNames of a given OU """
         if base is None:
             base = self.LDAP_USER_BASE
         search = '%s=*' % (objectType)
 
-        lc = SimplePagedResultsControl(
-            ldap.LDAP_CONTROL_PAGE_OID,True,(pageSize,''))
+        res = self.getattrs_by_filter(objectType, "*", attrlist=['sAMAccountName'])
 
-        msgid = self.ldap_client.search_ext(
-            base,
-            ldap.SCOPE_SUBTREE,
-            search,
-            serverctrls=[lc])
-
-        results=[]
-        pages = 0
-        
-        while True:
-            pages += 1
-            rtype, rdata, rmsgid, serverctrls = self.ldap_client.result3(msgid)
-            for dn,entry in rdata:
-                if dn is not None:
-                    results += entry['sAMAccountName']
-
-            pctrls = [
-              c
-              for c in serverctrls
-              if c.controlType == ldap.LDAP_CONTROL_PAGE_OID
-            ]
-            if pctrls:
-                est, cookie = pctrls[0].controlValue
-                if cookie:
-                    lc.controlValue = (pageSize, cookie)
-                    msgid = self.ldap_client.search_ext(
-                        base, 
-                        ldap.SCOPE_SUBTREE, 
-                        search,
-                        serverctrls=[lc])
-                else:
-                    break
-            else:
-                print "Warning:  Server ignores RFC 2696 control."
-                break
-
-        return results
+        return [x['sAMAccountName'] for x in res]
 
 #
 # Replace/Set the value of a given attribute for the specified user.
