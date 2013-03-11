@@ -21,7 +21,7 @@
 mldap2 - base module
 """
 
-__version__ = "2.0.4"
+__version__ = "2.0.5"
 
 import os
 import sys

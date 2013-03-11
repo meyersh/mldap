@@ -933,24 +933,6 @@ class mldap:
 
         return results
 
-        # result = self.ldap_client.search_s(searchpath,ldap.SCOPE_SUBTREE,search,[])
-
-        # attributes=result[0][1] # Because they nest it so darn deep!
-
-        # ret = []
-
-        # for (dn, attrs) in results:
-        #     if dn is None:
-        #         continue
-
-
-        #     for attr in attrs:
-        #         attrs[attr] = flatten(attrs[attr])
-                
-        #     ret.append(attrs)
-            
-        # return ret
-
     def getattr_by_filter(self, key, value, attr):
         """ Retrieve an attribute by filter (key=val) 
 
