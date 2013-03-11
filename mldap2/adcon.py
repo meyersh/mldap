@@ -869,7 +869,7 @@ class mldap:
         # the not-present operator: (!attribute_name=*) to test for
         # the absence of an attribute
         if value is None:
-            search = "(&(!(objectClass=computer))(!(%s=*)))" % str(key)
+            search = "(&(!(objectClass=computer))(!(objectClass=organizationalUnit))(!(%s=*)))" % str(key)
 
         elif key == 'objectGUID':
             search = "(&(!(objectClass=computer))(%s=%s))" % (str(key), ldap.filter.escape_filter_chars(str(value)))
