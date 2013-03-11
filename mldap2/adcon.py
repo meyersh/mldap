@@ -2,9 +2,12 @@ import ldap
 import ldap.filter
 from ldap.controls import SimplePagedResultsControl
 
-from uac import uac
-from aduser import ADuser
+from uac     import uac
+from aduser  import ADuser
 from adgroup import ADgroup
+
+from functions import unicodePasswd
+from functions import flatten
 
 import datetime
 import warnings
@@ -446,7 +449,8 @@ class mldap:
         `objectGUID` object. """
 
         self.replace_by_objectguid(objectGUID, 
-                                   'unicodePwd', unicodePasswd(newpass))
+                                   'unicodePwd', 
+                                   unicodePasswd(newpass))
 
 
 
