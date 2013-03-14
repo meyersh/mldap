@@ -152,7 +152,10 @@ class mldap:
             base = self.LDAP_USER_BASE
         search = '%s=*' % (objectType)
 
-        res = self.getattrs_by_filter(objectType, "*", attrlist=['sAMAccountName'])
+        res = self.getattrs_by_filter(
+            objectType, 
+            "*", 
+            attrlist=[objectType])
 
         return [x['sAMAccountName'] for x in res]
 
