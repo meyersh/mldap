@@ -227,9 +227,7 @@ class mldap:
                 attributes['password'] = 'changeme'
 
             # Encode password as unicode for AD.
-            unicode1 = unicode("\"" + attributes['password'] + "\"", "iso-8859-1")
-            unicode2 = unicode1.encode("utf-16-le")
-            attributes['password'] = unicode2
+            attributes['password'] = unicodePasswd(attributes['password'])
 
             # TODO: Make this more general
             userprincipalname="%s@%s" % (samaccountname, self.LDAP_DOMAIN)
@@ -398,12 +396,9 @@ class mldap:
         reset with whatever user this module binds with so 
         make sure that it has the proper AD permissions. """
         
-        # Encode password as unicode for AD.
-        unicode1 = unicode("\"" + newpass + "\"", "iso-8859-1")
-        unicode2 = unicode1.encode("utf-16-le")
-        unicodePwd = unicode2 # Our unicoded password.
-
-        self.replace(sAMAccountName, 'unicodePwd', unicodePwd)
+        self.replace(sAMAccountName, 
+                     'unicodePwd', 
+                     unicodePasswd(newpass))
 
     def resetpw_by_objectguid(self, objectGUID, newpass):
         """ Perform an administrative password reset. To perform this
