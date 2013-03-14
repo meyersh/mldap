@@ -163,15 +163,15 @@ class uac(object):
         return "<%s object (%s)>" % (self.__class__, str(self.flags()))
 
     def commit(self):
-        """ Commit changes back to the self.samaccountname. """
+        """ Commit changes back to the self.objectguid object. """
         try:
-            self.ad.setuac(self.samaccountname, self)
+            self.ad.replace_by_objectguid(self.objectguid, str(self))
         except:
             raise Exception("No AD data member to commit")
 
-    def __init__(self, value=0):
-        self.ad = None
-        self.samaccountname = None
+    def __init__(self, value=0, ad_con=None, objectguid=None):
+        self.ad = ad_con
+        self.objectguid=objectguid
 
         self.uac_value = int(value)
         self.flags = self.instance_flags
