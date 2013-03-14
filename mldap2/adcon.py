@@ -155,7 +155,8 @@ class mldap:
         res = self.getattrs_by_filter(
             objectType, 
             "*", 
-            attrlist=[objectType])
+            attrlist=[objectType],
+            pageSize=pageSize)
 
         return [x['sAMAccountName'] for x in res]
 
@@ -841,7 +842,8 @@ class mldap:
 # PROTOTYPE USER OBJ FUNCTIONS
 ############
 
-    def getattrs_by_filter(self, key, value, attrlist=None, base=None):
+    def getattrs_by_filter(self, key, value, 
+                           attrlist=None, base=None, pageSize=1000):
         ''' Search AD by attribute.
 
         :param attrlist: The attributes desired (None for all)
@@ -873,8 +875,6 @@ class mldap:
             search = "(&(!(objectClass=computer))(%s=%s))" % (str(key), ldap.filter.escape_filter_chars(str(value)))
         else:
             search = "(&(!(objectClass=computer))(%s=%s))" % (str(key), str(value))
-
-        pageSize = 500
 
         lc = ldap.controls.SimplePagedResultsControl(
             ldap.LDAP_CONTROL_PAGE_OID,True,(pageSize,''))
