@@ -843,11 +843,13 @@ class mldap:
 # PROTOTYPE USER OBJ FUNCTIONS
 ############
 
-    def getattrs_by_filter(self, key, value, attrlist=None, base=None):
+    def getattrs_by_filter(self, key, value, attrlist=None, base=None, compare='=', addt_filter=''):
         ''' Search AD by attribute.
 
         :param attrlist: The attributes desired (None for all)
         :type attrlist: list
+
+        :param compare: Comparison, valid operators: =, >=, <= (lexicographical)
 
         :return: A list of result dictionaries.
 
@@ -869,12 +871,13 @@ class mldap:
         # the not-present operator: (!attribute_name=*) to test for
         # the absence of an attribute
         if value is None:
-            search = "(&(!(objectClass=computer))(!(objectClass=organizationalUnit))(!(%s=*)))" % str(key)
+            search = "(&(!(objectClass=computer))(!(objectClass=organizationalUnit))(!(%s=*))%s)" % (str(key), 
+                                                                                                     addt_filter)
 
         elif key == 'objectGUID':
-            search = "(&(!(objectClass=computer))(%s=%s))" % (str(key), ldap.filter.escape_filter_chars(str(value)))
+            search = "(&(!(objectClass=computer))(%s%s%s)%s)" % (str(key), compare, ldap.filter.escape_filter_chars(str(value)), addt_filter)
         else:
-            search = "(&(!(objectClass=computer))(%s=%s))" % (str(key), str(value))
+            search = "(&(!(objectClass=computer))(%s%s%s)%s)" % (str(key), ldap.filter.escape_filter_chars(compare), str(value), addt_filter)
 
         pageSize = 500
 
