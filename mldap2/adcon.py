@@ -152,7 +152,11 @@ class mldap:
             base = self.LDAP_USER_BASE
         search = '%s=*' % (objectType)
 
-        res = self.getattrs_by_filter(objectType, "*", attrlist=['sAMAccountName'])
+        res = self.getattrs_by_filter(
+            objectType, 
+            "*", 
+            attrlist=[objectType],
+            pageSize=pageSize)
 
         return [x['sAMAccountName'] for x in res]
 
@@ -227,9 +231,7 @@ class mldap:
                 attributes['password'] = 'changeme'
 
             # Encode password as unicode for AD.
-            unicode1 = unicode("\"" + attributes['password'] + "\"", "iso-8859-1")
-            unicode2 = unicode1.encode("utf-16-le")
-            attributes['password'] = unicode2
+            attributes['password'] = unicodePasswd(attributes['password'])
 
             # TODO: Make this more general
             userprincipalname="%s@%s" % (samaccountname, self.LDAP_DOMAIN)
@@ -398,12 +400,9 @@ class mldap:
         reset with whatever user this module binds with so 
         make sure that it has the proper AD permissions. """
         
-        # Encode password as unicode for AD.
-        unicode1 = unicode("\"" + newpass + "\"", "iso-8859-1")
-        unicode2 = unicode1.encode("utf-16-le")
-        unicodePwd = unicode2 # Our unicoded password.
-
-        self.replace(sAMAccountName, 'unicodePwd', unicodePwd)
+        self.replace(sAMAccountName, 
+                     'unicodePwd', 
+                     unicodePasswd(newpass))
 
     def resetpw_by_objectguid(self, objectGUID, newpass):
         """ Perform an administrative password reset. To perform this
@@ -843,7 +842,12 @@ class mldap:
 # PROTOTYPE USER OBJ FUNCTIONS
 ############
 
-    def getattrs_by_filter(self, key, value, attrlist=None, base=None, compare='=', addt_filter=''):
+    def getattrs_by_filter(self, key, value, 
+                           attrlist=None, 
+                           base=None, 
+                           pageSize=1000, 
+                           compare='=', 
+                           addt_filter=''):
         ''' Search AD by attribute.
 
         :param attrlist: The attributes desired (None for all)
@@ -878,8 +882,6 @@ class mldap:
             search = "(&(!(objectClass=computer))(%s%s%s)%s)" % (str(key), compare, ldap.filter.escape_filter_chars(str(value)), addt_filter)
         else:
             search = "(&(!(objectClass=computer))(%s%s%s)%s)" % (str(key), ldap.filter.escape_filter_chars(compare), str(value), addt_filter)
-
-        pageSize = 500
 
         lc = ldap.controls.SimplePagedResultsControl(
             ldap.LDAP_CONTROL_PAGE_OID,True,(pageSize,''))

@@ -1,3 +1,5 @@
+from uac import uac
+
 class ADuser(object):
     """ 
     An Active Directory-backed user representation object.
@@ -173,3 +175,8 @@ class ADuser(object):
             setattr(self, attr, value)
             self.commit()
             
+    def get_uac(self):
+        """ Return the UAC object representing this user. """
+
+        return uac(self.userAccountControl, 
+                   ad_obj=self.adcon, objectguid=self.objectGUID)
