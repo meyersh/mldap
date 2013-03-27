@@ -2,12 +2,11 @@ from distutils.core import setup
 
 setup(
     name='mldap',
-    description=
-    'A simple interface for manipulating Active Directory using LDAP',
+    description='A simple interface for manipulating Active Directory with LDAP',
     author='Shaun Meyer',
     author_email='meyersh@morningside.edu',
     url='http://github.com/meyersh/mldap',
     version='2.0',
-    packages=['mldap'],
-    requires=['python-ldap'],
+    packages=['mldap', 'mldap2'],
+    requires=['ldap'],
     )
