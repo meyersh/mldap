@@ -50,7 +50,9 @@ def epochFromDatetime(dt=datetime.datetime.now()):
 
     diff = dt - winnt_epoch
 
-    return int(diff.total_seconds()*10000000)
+    total_seconds = diff.days * 86400 + diff.seconds
+
+    return int(total_seconds*10000000)
 
 def epochToDatetime(epoch):
     """ Given the windows datetime field used in the accountExpires
