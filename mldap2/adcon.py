@@ -532,7 +532,7 @@ class mldap:
         try:
             return self.ldap_client.compare_s(dn, attr, value) == 1
         except ldap.NO_SUCH_ATTRIBUTE:
-            return false
+            return False
 
     def compare(self, samaccountname, attr, value):
         """ Verify that an AD object has attr set to value.
