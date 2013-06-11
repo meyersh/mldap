@@ -420,6 +420,28 @@ class mldap:
 # A few group functions
 ################################################################################
 
+    def add_to_multivalued(self, objectguid, attribute, value):
+        if type(value) is not type(list()):
+            value = [value]
+
+        try:
+            self.ldap_client.modify_s(self.get_dn_from_objectguid(objectguid), 
+                                      [(ldap.MOD_ADD, attribute, value)])
+        except ldap.ALREADY_EXISTS:
+            return # entry is already there.
+
+    def remove_from_multivalued(self, objectguid, attribute, value):
+        if type(value) is not type(list()):
+            value = [value]
+
+        try:
+            self.ldap_client.modify_s(self.get_dn_from_objectguid(objectguid), 
+                                      [(ldap.MOD_DELETE, attribute, value)])
+        except ldap.NO_SUCH_ATTRIBUTE: 
+            return # No such attribute to remove. 
+
+
+
 #
 # Adds a user to a given group.
 #
