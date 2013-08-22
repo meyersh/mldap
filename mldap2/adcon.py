@@ -13,10 +13,10 @@ import datetime
 import warnings
 
 class mldap:
-    """ This class is specifically designed to connect to and interact with 
-    our Active Directory via :mod:`ldap`. 
-    
-    Named parameters: 
+    """ This class is specifically designed to connect to and interact with
+    our Active Directory via :mod:`ldap`.
+
+    Named parameters:
       * credsfile
       * LDAP_USERNAME
       * LDAP_PASSWORD
@@ -25,22 +25,22 @@ class mldap:
       * LDAP_USER_BASE
       * LDAP_GROUP_BASE
       * LDAP_DOMAIN
-    
+
     """
 
     def __init__(self, **args):
-        """ 
+        """
         :type creds: Dictionary
         :param dict creds: Dictionary which optionally contains LDAP_USERNAME,
-        LDAP_PASSWORD, or LDAP_SERVER keys to override what is loaded from 
+        LDAP_PASSWORD, or LDAP_SERVER keys to override what is loaded from
         the credsfile variable.
         """
 
         self.__dict__.update(args)
 
         # Warn for missing keys in the configuration.
-        for element in ('LDAP_USERNAME', 'LDAP_PASSWORD', 
-                        'LDAP_SERVER', 'LDAP_BASE', 
+        for element in ('LDAP_USERNAME', 'LDAP_PASSWORD',
+                        'LDAP_SERVER', 'LDAP_BASE',
                         'LDAP_USER_BASE', 'LDAP_GROUP_BASE', 'LDAP_DOMAIN'):
             if element not in args:
                 warnings.warn("Missing parameter '%s' in mldap object instanciation." % element)
@@ -58,9 +58,9 @@ class mldap:
             return False
 
     def connect(self):
-        """ Try to build a connection. 
+        """ Try to build a connection.
 
-        .. note:: 
+        .. note::
 
           This shouldn't (but does) call :func:`sys.exit` for
           :mod:`ldap.INVALID_CREDENTIALS` and :mod:`ldap.SERVER_DOWN`
@@ -77,7 +77,7 @@ class mldap:
             # perform a synchronous bind
             self.ldap_client.simple_bind_s(
                 self.LDAP_USERNAME, self.LDAP_PASSWORD)
-        
+
         except ldap.INVALID_CREDENTIALS, e:
             print "Invalid credentials: ",e
             sys.exit()
@@ -122,7 +122,7 @@ class mldap:
                 return result[0][1]['sAMAccountName'][0]
 
     def exists(self, samaccountname):
-        """ Check if an account exists based on the presence of a sAMAccountName 
+        """ Check if an account exists based on the presence of a sAMAccountName
 
         :return: bool
 
@@ -153,8 +153,8 @@ class mldap:
         search = '%s=*' % (objectType)
 
         res = self.getattrs_by_filter(
-            objectType, 
-            "*", 
+            objectType,
+            "*",
             attrlist=[objectType],
             pageSize=pageSize)
 
@@ -165,7 +165,7 @@ class mldap:
 #
 
     def replace(self, samaccountname, attribute, value):
-       """ Replace/Set the value of a given attribute for the 
+       """ Replace/Set the value of a given attribute for the
        specified user. """
        mod_attrs = [( ldap.MOD_REPLACE, attribute, value )]
        dn=self.get_dn_from_sn(samaccountname)
@@ -175,7 +175,7 @@ class mldap:
 
 
     def replace_by_objectguid(self, objectGUID, attribute, value):
-       """ Replace/Set the value of a given attribute for the 
+       """ Replace/Set the value of a given attribute for the
        specified user. """
        mod_attrs = [( ldap.MOD_REPLACE, attribute, value )]
        dn=self.get_dn_from_objectguid(objectGUID)
@@ -184,14 +184,14 @@ class mldap:
        self.ldap_client.modify_s(dn, mod_attrs)
 
 
-       
+
     def delete_user(self, samaccountname):
         """ Attempt to delete a given dn by referencing samaccountname. """
         if (self.exists(samaccountname)):
             dn = self.get_dn_from_sn(samaccountname)
             self.ldap_client.delete(dn)
-            
-# 
+
+#
 # Create a new account with specified attributes set.
 # All 'attributes' are expected to be LDAP attributes
 # except for 'password' which is properly converted
@@ -202,30 +202,30 @@ class mldap:
         """ Create a new account with the specified attributes set.
         All 'attributes' are expected to be LDAP attributes except
         for attributes['password'] which is properly converted for
-        AD's unicodePwd field. 
+        AD's unicodePwd field.
 
         :type samaccountname: str
         :param samaccountname: Username to create
-        
+
         :type cn: str
         :param cn: CN of new account (only the CN=(whatever))
-        
+
         :type path: str
         :param path: ldap path of OU for new account
 
         :type CONSTattributes: dict
         :param CONSTattributes: A dict of LDAP attributes for the new account.
-        
+
         """
 
-        # Dictionaries are passed by reference, I do not want to 
-        # modify it outside of function scope. 
+        # Dictionaries are passed by reference, I do not want to
+        # modify it outside of function scope.
         # SRGM - Jun 1, 2010
         attributes = dict(CONSTattributes)
 
         if not self.exists(samaccountname):
             dn="CN=%s,%s" % (cn, path)
-           
+
             # The default password is 'changeme'
             if 'password' not in attributes:
                 attributes['password'] = 'changeme'
@@ -265,13 +265,13 @@ class mldap:
 
         :type groupname: str
         :param groupname: Group name to create
-        
+
         :type path: str
         :param path: base CN of new group
-        
+
         :type members: list
         :param members: A list of members to pre-populate group.
-        
+
         """
 
         if self.exists(groupname):
@@ -285,13 +285,13 @@ class mldap:
                     group_members.append(ad.get_dn_from_sn(m))
 
         dn="CN=%s,%s" % (groupname, path)
-           
+
         add_record = [
             ('objectclass', ['top', 'group']),
             ('samaccountname', groupname),
             ('cn', groupname)
             ]
-        
+
         try:
             self.ldap_client.add_s(dn, add_record)
             for m in group_members:
@@ -355,7 +355,7 @@ class mldap:
 
         result = self.ldap_client.search_s(
             search,
-            ldap.SCOPE_SUBTREE, 
+            ldap.SCOPE_SUBTREE,
             attrlist=['sAMAccountName'])
 
         if not len(result):
@@ -391,17 +391,17 @@ class mldap:
         #    return 0
         assert len(result) == 1
 
-        return result[0][0] # Return the first DN from our results 
+        return result[0][0] # Return the first DN from our results
                             # (no way we got two, right??)
 
     def resetpw(self, sAMAccountName, newpass):
-        """ Wraps around L{self.replace()} to reset a given 
-        password. Note: This attempts the administrative 
-        reset with whatever user this module binds with so 
+        """ Wraps around L{self.replace()} to reset a given
+        password. Note: This attempts the administrative
+        reset with whatever user this module binds with so
         make sure that it has the proper AD permissions. """
-        
-        self.replace(sAMAccountName, 
-                     'unicodePwd', 
+
+        self.replace(sAMAccountName,
+                     'unicodePwd',
                      unicodePasswd(newpass))
 
     def resetpw_by_objectguid(self, objectGUID, newpass):
@@ -410,8 +410,8 @@ class mldap:
         permissions in AD to reset the password belonging to
         `objectGUID` object. """
 
-        self.replace_by_objectguid(objectGUID, 
-                                   'unicodePwd', 
+        self.replace_by_objectguid(objectGUID,
+                                   'unicodePwd',
                                    unicodePasswd(newpass))
 
 
@@ -425,7 +425,7 @@ class mldap:
             value = [value]
 
         try:
-            self.ldap_client.modify_s(self.get_dn_from_objectguid(objectguid), 
+            self.ldap_client.modify_s(self.get_dn_from_objectguid(objectguid),
                                       [(ldap.MOD_ADD, attribute, value)])
         except ldap.ALREADY_EXISTS:
             return # entry is already there.
@@ -435,10 +435,10 @@ class mldap:
             value = [value]
 
         try:
-            self.ldap_client.modify_s(self.get_dn_from_objectguid(objectguid), 
+            self.ldap_client.modify_s(self.get_dn_from_objectguid(objectguid),
                                       [(ldap.MOD_DELETE, attribute, value)])
-        except ldap.NO_SUCH_ATTRIBUTE: 
-            return # No such attribute to remove. 
+        except ldap.NO_SUCH_ATTRIBUTE:
+            return # No such attribute to remove.
 
 
 
@@ -455,7 +455,7 @@ class mldap:
             return 0
         except ldap.ALREADY_EXISTS:
             print "Cannot add %s to group %s: user is already a member." % (
-                sAMAccountName, 
+                sAMAccountName,
                 groupCN)
             return 1
 
@@ -469,7 +469,7 @@ class mldap:
         group = self.get_dn_from_sn(groupCN)
 
         try:
-            self.ldap_client.modify_s(group, 
+            self.ldap_client.modify_s(group,
                                       [(ldap.MOD_DELETE, 'member', [dn])])
             return 0
         except:
@@ -489,7 +489,7 @@ class mldap:
             searchpath,ldap.SCOPE_SUBTREE,search,attrs)
         #members=result[0][1]['member']
         members = result
-        
+
         return members
 
     #
@@ -515,7 +515,7 @@ class mldap:
         return unpacked_set
 
 
-# 
+#
 # Returns a given set of attributes for an SN, probably superceded by
 # getattr()
 #
@@ -547,7 +547,7 @@ class mldap:
 
     def compare_by_objectguid(self, objectguid, attr, value):
         """ Verify that an AD object has attr set to value.
-        
+
         Raises: :mod:`ldap.NO_SUCH_ATTRIBUTE`"""
 
         dn = self.get_dn_from_objectguid(objectguid)
@@ -558,7 +558,7 @@ class mldap:
 
     def compare(self, samaccountname, attr, value):
         """ Verify that an AD object has attr set to value.
-        
+
         Raises: :mod:`ldap.NO_SUCH_ATTRIBUTE`"""
         compare_by_objectguid(self.getattr(samaccountname, 'objectGUID'), attr, value)
 
@@ -568,12 +568,12 @@ class mldap:
 #
 
     def getmattr(self, samaccountname, attr="*"):
-        """ Return a multiple, multivalued, attributes from AD. 
-        
+        """ Return a multiple, multivalued, attributes from AD.
+
         When working with results from LDAP the scheme is as follows:
-            
+
         C{results[r][n]{attr}[values]}
-        
+
         Where:
             - C{r = result number}
             - C{n[0] = dn of result}
@@ -584,13 +584,13 @@ class mldap:
 
         searchpath=self.LDAP_BASE
         search = 'samaccountname='+str(samaccountname)
-        
+
         # Determine if attr is str or list type:
         if type(attr).__name__ == 'str':
             attrs = [attr]
         elif type(attr).__name__ == 'list':
             attrs=attr
-          
+
         result = self.ldap_client.search_s(
             searchpath,
             ldap.SCOPE_SUBTREE,
@@ -603,7 +603,7 @@ class mldap:
         # n = 0 for result DN, 1 for attributes
         # (if n=1): {attr} = dictionary of attributes
         # A = list of attribute values
-        
+
         return result
 
 
@@ -614,20 +614,20 @@ class mldap:
 # getattr(samaccountname)
 #
     def getattr_old(self, samaccountname, attr="*"):
-        """ Lookup attributes on a given sAMAccountName. If 
+        """ Lookup attributes on a given sAMAccountName. If
         not specified, return all attributes.
         getattr(sAMAccountName, [attr1, attr2, ...])
         getattr(samaccountname) """
 
         searchpath=self.LDAP_BASE
         search = 'samaccountname='+str(samaccountname)
-        
+
         # Determine if attr is str or list type:
         if type(attr).__name__ == 'str':
             attrs = [attr]
         elif type(attr).__name__ == 'list':
             attrs=attr
-          
+
         result = self.ldap_client.search_s(
             searchpath,
             ldap.SCOPE_SUBTREE,
@@ -665,10 +665,10 @@ class mldap:
             return 0
 
     def getattr(self, samaccountname, attr="*"):
-        """ Lookup attributes on a given sAMAccountName. If 
+        """ Lookup attributes on a given sAMAccountName. If
         not specified, return all attributes.
         getattr(sAMAccountName, [attr1, attr2, ...])
-        getattr(samaccountname) 
+        getattr(samaccountname)
 
         :param attr: String containing one LDAP attribute, a list of
             LDAP attributes, or a string containing '*' to return all
@@ -681,7 +681,7 @@ class mldap:
 
           >>> mldapObj.getattr("wimpy", "sAMAccountName")
           'wimpy'
-          
+
           >>> mldapObj.getattr("wimpy")['sAMAccountName']
           'wimpy'
           """
@@ -691,7 +691,7 @@ class mldap:
 
         searchpath=self.LDAP_BASE
         search = 'samaccountname='+str(samaccountname)
-        
+
         if isinstance(attr, str):
             attrs = [attr]
         else:
@@ -727,7 +727,7 @@ class mldap:
         else:
             return result.get(attrs[0])
 
-            
+
     def getuac(self, samaccountname):
         """ Retrieve the userAccountControl field for a given user.
 
@@ -737,7 +737,7 @@ class mldap:
         >>> ad.getuac('shaunt')
         <<class 'mldap.uac'> object (['ADS_UF_NORMAL_ACCOUNT'])>
 
-        :return: a :mod:`mldap2.uac.uac` object derived from these flags. 
+        :return: a :mod:`mldap2.uac.uac` object derived from these flags.
         """
         userAccountControl_flags = int(
             self.getattr(samaccountname, 'userAccountControl'))
@@ -750,7 +750,7 @@ class mldap:
 
 
     def setuac(self, samaccountname, new_uac):
-        """ Set the uac field for a given user.  
+        """ Set the uac field for a given user.
         :param new_uac: The decimal representation of the
         userAccountControl field (actually, any input is ok as long as
         it converts properly with str() which at this time means
@@ -765,19 +765,19 @@ class mldap:
             uac.ADS_UF_ACCOUNTDISABLE)
 
     def isexpired(self, samaccountname):
-        """ Is a given sAMAccountName expired? 
+        """ Is a given sAMAccountName expired?
         accountExpires is the number of ticks (100n/s [.0000001s])
         since 12:00AM Jan 1, 1601. [#thanksMS]_ Additionally, it's in UTC
 
         If a user object in Active Directory has never had an
         expiration date, the accountExpires attribute is set to a huge
         number. The actual value is 2^63 - 1, or
-        9,223,372,036,854,775,807. 
+        9,223,372,036,854,775,807.
 
         """
 
         winnt_epoch = datetime.datetime(1601, 1, 1, 0, 0)
-        
+
         winnt_time = int(self.getattr(samaccountname, 'accountExpires'))
         winnt_time /= 10000000 # Convert to seconds
 
@@ -789,8 +789,8 @@ class mldap:
         expiration_date = winnt_epoch + datetime.timedelta(seconds=winnt_time)
 
         return datetime.datetime.now() > expiration_date
-        
-# 
+
+#
 # Search AD for a given first and last name.
 #
 
@@ -816,7 +816,7 @@ class mldap:
             return result
 
     def move(self, srcDN, destDN):
-        ''' (srcdn, newrdn, destdn) 
+        ''' (srcdn, newrdn, destdn)
         self.ldap_client.rename_s(
             'CN=Joe D Doe,OU=Users,DC=domain,DC=com',
             'CN=Joe D Doe',
@@ -832,22 +832,22 @@ class mldap:
 
     def move2(self, samaccountname, destOU):
         """ This uses code not available until python-ldap v2.3.2. On RHEL/CentOS
-        5.8, repositories only have python-ldap v2.2.0.  
+        5.8, repositories only have python-ldap v2.2.0.
 
         param samaccountname: The accountname to search and move.
         param destOU: the folder to move the samaccountname into.
 
         >>> self.ldap_client.rename_s(
-            'CN=Jane D Doe,OU=Users,DC=domain,DC=com', 
-            'CN=Jane D Doe', 
+            'CN=Jane D Doe,OU=Users,DC=domain,DC=com',
+            'CN=Jane D Doe',
             'OU=OldUsers,DC=domain,DC=com'
             )
             """
 
         srcDN = ldap.dn.explode_dn(ad.get_dn_from_sn(samaccountname))
-        
+
         rdn = srcDN[0]
-        
+
         self.ldap_client.rename_s( ",".join(srcDN),
                                    rdn,
                                    destOU )
@@ -858,17 +858,17 @@ class mldap:
             u.userPrincipalName = u.userPrincipalName.replace(old_username, new_username)
             u.sAMAccountName = new_username
             u.commit()
-        
-                                   
+
+
 ################
 # PROTOTYPE USER OBJ FUNCTIONS
 ############
 
-    def getattrs_by_filter(self, key, value, 
-                           attrlist=None, 
-                           base=None, 
-                           pageSize=1000, 
-                           compare='=', 
+    def getattrs_by_filter(self, key, value,
+                           attrlist=None,
+                           base=None,
+                           pageSize=1000,
+                           compare='=',
                            addt_filter=''):
         ''' Search AD by attribute.
 
@@ -889,7 +889,7 @@ class mldap:
         '''
         if base is None:
             base = self.LDAP_USER_BASE
-        
+
         search = None
 
         # To handle searches for None values (to answer who DOESN'T
@@ -897,7 +897,7 @@ class mldap:
         # the not-present operator: (!attribute_name=*) to test for
         # the absence of an attribute
         if value is None:
-            search = "(&(!(objectClass=computer))(!(objectClass=organizationalUnit))(!(%s=*))%s)" % (str(key), 
+            search = "(&(!(objectClass=computer))(!(objectClass=organizationalUnit))(!(%s=*))%s)" % (str(key),
                                                                                                      addt_filter)
 
         elif key == 'objectGUID':
@@ -943,8 +943,8 @@ class mldap:
                 if cookie:
                     lc.controlValue = (pageSize, cookie)
                     msgid = self.ldap_client.search_ext(
-                        base, 
-                        ldap.SCOPE_SUBTREE, 
+                        base,
+                        ldap.SCOPE_SUBTREE,
                         search,
                         serverctrls=[lc],
                         attrlist=attrlist)
@@ -961,7 +961,7 @@ class mldap:
         return results
 
     def getattr_by_filter(self, key, value, attr):
-        """ Retrieve an attribute by filter (key=val) 
+        """ Retrieve an attribute by filter (key=val)
 
         :return: The requested value, or None.
 
@@ -981,7 +981,7 @@ class mldap:
             return None
 
     def getusers_by_filter(self, attr, value):
-        """ Retrieve a list of users by filter. 
+        """ Retrieve a list of users by filter.
 
         :param attr: AD attribute (sAMAccountName, etc)
         :type attr: str
@@ -996,7 +996,7 @@ class mldap:
         attributes = self.getattrs_by_filter(attr, value)
         users = []
         for attribute in attributes:
-            users.append(ADuser(attribute['sAMAccountName'], 
+            users.append(ADuser(attribute['sAMAccountName'],
                                 ad_obj=self, attributes=attribute))
 
         return users
@@ -1034,14 +1034,14 @@ class mldap:
             samaccountname = self.get_sn_from_dn(samaccountname_or_dn)
         else:
             samaccountname = samaccountname_or_dn
-            
+
         attributes = self.getattr(samaccountname)
         if attributes is not None:
-            return ADuser(samaccountname, ad_obj=self, 
+            return ADuser(samaccountname, ad_obj=self,
                           attributes=self.getattr(samaccountname))
         else:
             return None
-        
+
     def getgroup(self, group):
         g = ADgroup(group, self.get_dn_from_sn(group))
         for user in self.bgroup(group):
@@ -1064,11 +1064,11 @@ class mldap:
         for (dn, attrs) in results:
             if dn is None:
                 continue
-            
+
             ret.append(ADuser(attrs['sAMAccountName'], attrs, ad_obj=self))
 
         return ret
-            
+
 # all is well, close connection
     def disconnect(self):
         """ Close the AD/LDAP Connection if it is open. """
@@ -1076,4 +1076,3 @@ class mldap:
             self.ldap_client.unbind()
         except ldap.LDAPError:
             pass # Prevent crashes on multiple disconnect() calls.
-            
