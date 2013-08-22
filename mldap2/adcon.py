@@ -1014,9 +1014,12 @@ class mldap:
 
         Examples:
 
-            >>> user = self.getusers_by_filter(attr, value)
+            >>> user = self.getuser_by_filter(attr, value)
 
         """
+
+        users = self.getusers_by_filter(attr, value)
+
 
         if len(users) == 1:
             return users[0]
