@@ -12,6 +12,9 @@ from functions import flatten
 import datetime
 import warnings
 
+class NoSuchObject(Exception):
+    pass
+
 class mldap:
     """ This class is specifically designed to connect to and interact with
     our Active Directory via :mod:`ldap`.
@@ -156,6 +159,7 @@ class mldap:
             objectType,
             "*",
             attrlist=[objectType],
+            base=base,
             pageSize=pageSize)
 
         return [x['sAMAccountName'] for x in res]
@@ -550,6 +554,9 @@ class mldap:
 
         Raises: :mod:`ldap.NO_SUCH_ATTRIBUTE`"""
 
+        if not value:
+            return self.getattr_by_filter('objectGUID', objectguid, attr) is None
+
         dn = self.get_dn_from_objectguid(objectguid)
         try:
             return self.ldap_client.compare_s(dn, attr, value) == 1
@@ -560,7 +567,8 @@ class mldap:
         """ Verify that an AD object has attr set to value.
 
         Raises: :mod:`ldap.NO_SUCH_ATTRIBUTE`"""
-        compare_by_objectguid(self.getattr(samaccountname, 'objectGUID'), attr, value)
+        return self.compare_by_objectguid(
+            self.getattr(samaccountname, 'objectGUID'), attr, value)
 
 
 #
@@ -742,11 +750,9 @@ class mldap:
         userAccountControl_flags = int(
             self.getattr(samaccountname, 'userAccountControl'))
 
-        user_uac = uac(userAccountControl_flags)
-        user_uac.ad = self
-        user_uac.samaccountname = samaccountname
-
-        return user_uac
+        return uac(value=userAccountControl_flags,
+                   ad_con = self,
+                   objectguid = self.getattr(samaccountname, 'objectGUID'))
 
 
     def setuac(self, samaccountname, new_uac):
@@ -855,6 +861,7 @@ class mldap:
     def renameUser(self, old_username, new_username):
         u = self.getuser(old_username)
         if u:
+            # Replace <old>@DOMAIN.FQDN with <new>@DOMAIN.FQDN using str().replace() method.
             u.userPrincipalName = u.userPrincipalName.replace(old_username, new_username)
             u.sAMAccountName = new_username
             u.commit()
@@ -1014,12 +1021,11 @@ class mldap:
 
         Examples:
 
-            >>> user = self.getuser_by_filter(attr, value)
+            >>> user = self.getusers_by_filter(attr, value)
 
         """
 
         users = self.getusers_by_filter(attr, value)
-
 
         if len(users) == 1:
             return users[0]
