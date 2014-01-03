@@ -2,9 +2,9 @@
 # Some UAC (user Account Control) codes
 ################################################################################
 class uac(object):
-    """ A quick definition of some constants in the 
+    """ A quick definition of some constants in the
     userAccountControl attribute. """
- 
+
     uac_value = 0
     """ Default value (0) """
 
@@ -12,7 +12,7 @@ class uac(object):
     ADS_UF_SCRIPT = 0x00000001
     """ The logon script is executed. """
 
-    ADS_UF_ACCOUNTDISABLE = 0x00000002    
+    ADS_UF_ACCOUNTDISABLE = 0x00000002
     """ The user account is disabled. """
 
 
@@ -30,7 +30,7 @@ class uac(object):
     the permission settings of PASSWD_CANT_CHANGE by directly modifying
     the UserAccountControl attribute. For more information and a code
     example that shows how to prevent a user from changing the password,
-    see User Cannot Change Password. 
+    see User Cannot Change Password.
     (http://msdn.microsoft.com/en-us/library/aa746508(v=vs.85).aspx ) """
 
     ADS_UF_ENCRYPTED_TEXT_PASSWORD_ALLOWED = 0x00000080
@@ -46,15 +46,15 @@ class uac(object):
     """ This is a default account type that represents a typical user. """
 
     ADS_UF_INTERDOMAIN_TRUST_ACCOUNT = 0x00000800
-    """ This is a permit to trust account for a system domain that trusts 
+    """ This is a permit to trust account for a system domain that trusts
     other domains. """
 
     ADS_UF_WORKSTATION_TRUST_ACCOUNT = 0x00001000
-    """ This is a computer account for a computer that is a member of this 
+    """ This is a computer account for a computer that is a member of this
     domain. """
 
     ADS_UF_SERVER_TRUST_ACCOUNT = 0x00002000
-    """ This is a computer account for a system backup domain controller that 
+    """ This is a computer account for a system backup domain controller that
     is a member of this domain. """
 
     ADS_UF_DONT_EXPIRE_PASSWD = 0x00010000
@@ -100,7 +100,7 @@ class uac(object):
     @classmethod
     def flags(cls, value):
         """ iterate through flags (using dir()) and return a human-legible
-        rendition of account flags. 
+        rendition of account flags.
 
         >>> someUacObject.flags()
         ['ADS_UF_DONT_EXPIRE_PASSWD', 'ADS_UF_NORMAL_ACCOUNT']
@@ -112,10 +112,10 @@ class uac(object):
                 if value & cls().__getattribute__(flag):
                     ret.append(flag)
 
-        return ret    
+        return ret
 
     def instance_flags(self):
-        """ :return: a list of user-readable flags which are set. 
+        """ :return: a list of user-readable flags which are set.
 
         >>> someUacObject.flags()
         ['ADS_UF_DONT_EXPIRE_PASSWD', 'ADS_UF_NORMAL_ACCOUNT']
@@ -124,9 +124,9 @@ class uac(object):
         return uac.flags(self.uac_value)
 
     def set(self, flag):
-        """ Use OR to set a flag. 
-        
-        >>> someUacObject.set(uac.ADS_UF_PASSWORD_EXPIRED).commit() 
+        """ Use OR to set a flag.
+
+        >>> someUacObject.set(uac.ADS_UF_PASSWORD_EXPIRED).commit()
 
         :return: Self so that calls may be chained:
         """
@@ -137,7 +137,7 @@ class uac(object):
     def unset(self, flag):
         """ Use AND to unset a flag.
 
-        >>> someUacObject.set(uac.ADS_UF_PASSWORD_EXPIRED).commit() 
+        >>> someUacObject.set(uac.ADS_UF_PASSWORD_EXPIRED).commit()
 
         :return: Self so that calls may be chained.
         """
@@ -145,9 +145,9 @@ class uac(object):
         return self
 
     def is_set(self, flag):
-        """ Check if a specified flag is set. 
+        """ Check if a specified flag is set.
 
-        :return: Boolean 
+        :return: Boolean
         """
         if self.uac_value & int(flag):
             return True
@@ -164,10 +164,12 @@ class uac(object):
 
     def commit(self):
         """ Commit changes back to the self.objectguid object. """
-        try:
-            self.ad.replace_by_objectguid(self.objectguid, str(self))
-        except:
-            raise Exception("No AD data member to commit")
+        #        try:
+        self.ad.replace_by_objectguid(self.objectguid,
+                                      'userAccountControl',
+                                      str(self.uac_value))
+        #        except:
+        #            raise Exception("No AD data member to commit")
 
     def __init__(self, value=0, ad_con=None, objectguid=None):
         self.ad = ad_con
