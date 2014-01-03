@@ -1,6 +1,8 @@
-################################################################################
+###############################################################################
 # Some UAC (user Account Control) codes
-################################################################################
+###############################################################################
+
+
 class uac(object):
     """ A quick definition of some constants in the
     userAccountControl attribute. """
@@ -8,13 +10,11 @@ class uac(object):
     uac_value = 0
     """ Default value (0) """
 
-
     ADS_UF_SCRIPT = 0x00000001
     """ The logon script is executed. """
 
     ADS_UF_ACCOUNTDISABLE = 0x00000002
     """ The user account is disabled. """
-
 
     ADS_UF_HOMEDIR_REQUIRED = 0x00000008
     """ The home directory is required. """
@@ -173,7 +173,6 @@ class uac(object):
 
     def __init__(self, value=0, ad_con=None, objectguid=None):
         self.ad = ad_con
-        self.objectguid=objectguid
-
+        self.objectguid = objectguid
         self.uac_value = int(value)
         self.flags = self.instance_flags
