@@ -172,22 +172,39 @@ class mldap:
 #
 
     def replace(self, samaccountname, attribute, value):
-        """ Replace/Set the value of a given attribute for the
-        specified user. """
-        mod_attrs = [(ldap.MOD_REPLACE, attribute, value)]
-        dn = self.get_dn_from_sn(samaccountname)
-        if dn is None:
-            raise NoSuchObject(samaccountname)
-        self.ldap_client.modify_s(dn, mod_attrs)
+       """ Replace/Set the value of a given attribute for the
+       specified user. """
+
+       # Tuple: (mod_op, mod_type, mod_vals) where
+       # mod_op is one of ldap.MOD_ADD, ldap.MOD_DELETE, ldap.MOD_REPLACE
+       # mod_type is the attribute name
+       # mod_vals is a string value, or list of string values to
+       #   add/delete/replace. For the delete operation, mod_vals may be
+       #   None indicating that ALL values are to be deleted.
+
+       if not value: # Deleting an old value.
+           mod_list = [(ldap.MOD_DELETE,
+                        attribute,
+                        self.getattr(samaccountname, attribute))]
+       else: # Setting the value
+           mod_list = [( ldap.MOD_REPLACE, attribute, value )]
+
+       dn=self.get_dn_from_sn(samaccountname)
+       if dn is None:
+           raise NoSuchObject(samaccountname)
+       self.ldap_client.modify_s(dn, mod_list)
+
 
     def replace_by_objectguid(self, objectGUID, attribute, value):
-        """ Replace/Set the value of a given attribute for the
-        specified user. """
-        mod_attrs = [(ldap.MOD_REPLACE, attribute, value)]
-        dn = self.get_dn_from_objectguid(objectGUID)
-        if dn is None:
-            raise NoSuchObject(objectGUID)
-        self.ldap_client.modify_s(dn, mod_attrs)
+       """ Replace/Set the value of a given attribute for the
+       specified user. """
+       mod_attrs = [( ldap.MOD_REPLACE, attribute, value )]
+       dn=self.get_dn_from_objectguid(objectGUID)
+       if dn is None:
+           raise NoSuchObject(objectGUID)
+       self.ldap_client.modify_s(dn, mod_attrs)
+
+
 
     def delete_user(self, samaccountname):
         """ Attempt to delete a given dn by referencing samaccountname. """
