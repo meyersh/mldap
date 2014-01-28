@@ -1,10 +1,11 @@
 # MLDAP Doc
 
-`mldap` is a thin wrapper around the python-ldap library written to operate 
-against our 2003-based Active Directory.
-
-Specifically, it is used to programmatically create, delete, modify, and
-query active directory via the LDAP protocol.
+`mldap2` is a thin wrapper around the python-ldap library written to
+operate against our 2003-based Active Directory.Specifically, it is
+used to programmatically create, delete, modify, and query active
+directory via the LDAP protocol by lifting the programmer away from
+the context of working with LDAP and filters to working with user
+attributes and groups.
 
 # GOTCHA'S
 
@@ -19,27 +20,31 @@ adding `TLS_REQCERT allow` was a satisfactory work-around.
 
 # INSTALLATION
 
-Drop mldap.py into your python include path and include it. You will need
-to create a configuration file for your network (default location is in 
-/etc/ldap.creds).
+Drop mldap.py into your python include path and include it.
 
-credsfile example:
-```
-    [LDAP]
-    SERVER=ldap://my.server.url
-    USERNAME=administrator@my.domain.url
-    PASSWORD=some_base64_encoded_str=
-    BASE=dc=my,dc=domain,dc=url
-    DOMAIN=my.domain.url
-```
 
-EXAMPLES
-========
+# EXAMPLES
+
+## Basic connection, verify a user account.
 ```python
 >>> include mldap
->>> ad = mldap.mldap()
+>>> ad = mldap2.connect({'LDAP_USERNAME': 'your-ad-user@your-domain',
+...                      'LDAP_PASSWORD': 'xxxxx',
+...                      'LDAP_BASE': 'dc=YOUR,dc=DOMAIN'})
 >>> ad.exists('some-username')
 True
+```
 
+## Operate on a series of accounts (for instance, to change mail domains.)
+```python
+ad = mldap2.connect('''creds''')
+users = ad.getusers_by_filter('mail', '*@olddomain.com')
+for user in users:
+  user.mail.replace('@olddomain.com', '@newdomain.com') # user.mail is just a string.
+  user.commit() # updates any modified fields.
+```
+
+## Help!
+```
 >>> help(ad)
 ```
