@@ -789,19 +789,48 @@ class mldap:
 
         """
 
-        winnt_epoch = datetime.datetime(1601, 1, 1, 0, 0)
-
         winnt_time = int(self.getattr(samaccountname, 'accountExpires'))
-        winnt_time /= 10000000  # Convert to seconds
 
-        never_expires = 922337203685L
+        never_expires = 9223372036854775807L
 
         if winnt_time == never_expires or winnt_time == 0:
             return False
 
-        expiration_date = winnt_epoch + datetime.timedelta(seconds=winnt_time)
+        return datetime.datetime.now() > epochToDatetime(winnt_time)
 
-        return datetime.datetime.now() > expiration_date
+
+    def islocked(self, samaccountname):
+        """MSDN has this to say about lockoutTime:
+
+        The date and time (UTC) that this account was locked out. This
+        value is stored as a large integer that represents the number
+        of 100-nanosecond intervals since January 1, 1601 (UTC). A
+        value of zero means that the account is not currently locked
+        out.
+
+        However, further down the MSDN page says:
+
+        This attribute value is only reset when the account is logged
+        onto successfully. This means that this value may be non zero,
+        yet the account is not locked out. To accurately determine if
+        the account is locked out, you must add the Lockout-Duration
+        to this time and compare the result to the current time,
+        accounting for local time zones and daylight savings time.
+
+        """
+
+        lockoutTime = int(self.getattr(samaccountname, 'lockoutTime'))
+        if lockoutTime == 0:
+            return False
+
+        lockoutDuration = int(self.getattr(samaccountname, 'lockoutDuration'))
+
+        validAfter = epochToDatetime(lockoutTime + lockoutDuration)
+        if validAfter < datetime.datetime.now():
+            return False
+
+        # Otherwise, the account is locked.
+        return True
 
 #
 # Search AD for a given first and last name.
