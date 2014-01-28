@@ -1,3 +1,4 @@
 include README.md
+recursive-include mldap/
 recursive-include mldap2/
 recursive-exclude * *.py[co]
