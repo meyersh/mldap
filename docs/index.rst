@@ -9,7 +9,7 @@ Contents:
 :mod:`mldap2` Package
 ---------------------
 
-.. automodule:: mldap2.__init__
+.. automodule:: __init__
     :members:
     :undoc-members:
     :show-inheritance:
@@ -17,7 +17,7 @@ Contents:
 :mod:`adcon` Module
 -------------------
 
-.. automodule:: mldap2.adcon
+.. automodule:: adcon
     :members:
     :undoc-members:
     :show-inheritance:
@@ -33,7 +33,7 @@ Contents:
 :mod:`aduser` Module
 --------------------
 
-.. automodule:: mldap2.aduser
+.. automodule:: aduser
     :members:
     :undoc-members:
     :show-inheritance:
@@ -42,7 +42,7 @@ Contents:
 :mod:`functions` Module
 -----------------------
 
-.. automodule:: mldap2.functions
+.. automodule:: functions
     :members:
     :undoc-members:
     :show-inheritance:
@@ -50,7 +50,7 @@ Contents:
 :mod:`uac` Module
 -----------------
 
-.. automodule:: mldap2.uac
+.. automodule:: uac
     :members:
     :undoc-members:
     :show-inheritance:
