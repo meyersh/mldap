@@ -25,7 +25,7 @@ Contents:
 :mod:`adgroup` Module
 ---------------------
 
-.. automodule:: mldap2.adgroup
+.. automodule:: adgroup
     :members:
     :undoc-members:
     :show-inheritance:
