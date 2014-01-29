@@ -9,5 +9,5 @@ setup(
     version='2.0.1',
     package_dir={'mldap':'.'},
     packages=['mldap'],
-    requires=['ldap'],
+    install_requires=['python-ldap >= 2.3'],
     )
