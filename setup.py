@@ -6,7 +6,8 @@ setup(
     author='Shaun Meyer',
     author_email='meyersh@morningside.edu',
     url='http://github.com/meyersh/mldap',
-    version='2.0',
-    packages=['mldap', 'mldap2'],
+    version='2.0.1',
+    package_dir={'mldap':'.'},
+    packages=['mldap'],
     requires=['ldap'],
     )
