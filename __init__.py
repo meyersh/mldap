@@ -1,9 +1,11 @@
 #!/usr/bin/env python
-"""
-mldap2 - base module
+"""Mldap2 is a custom AD/LDAP wrapper build using python-ldap. It is
+used to simplify programmatic access to the users and groups in a
+Windows Server 2003 and Windows Server 2008 Active Directory(tm)
+Domain.
 
-Custom AD/LDAP Worker Library for Morningside College 2003 AD Domain
 Shaun Meyer - June, 2009
+
 """
 __version__ = "2.0.5"
 
@@ -28,18 +30,20 @@ class NoSuchObject(Exception):
 
 
 def connect(creds):
-    """ This class is specifically designed to connect to and interact with
-    our Active Directory via LDAP. Return a new instance.
+    """
+    Args:
+      creds(dict) having these keys:
+        * credsfile
+        * LDAP_USERNAME
+        * LDAP_PASSWORD
+        * LDAP_SERVER
+        * LDAP_BASE
+        * LDAP_USER_BASE
+        * LDAP_GROUP_BASE
+        * LDAP_DOMAIN
 
-    Named parameters:
-      * credsfile
-      * LDAP_USERNAME
-      * LDAP_PASSWORD
-      * LDAP_SERVER
-      * LDAP_BASE
-      * LDAP_USER_BASE
-      * LDAP_GROUP_BASE
-      * LDAP_DOMAIN
+    :returns:
+      A connected instance of the mldap object.
 
     """
     return mldap(**creds)

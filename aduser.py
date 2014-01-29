@@ -2,8 +2,7 @@ from uac import uac
 
 
 class ADuser(object):
-    """
-    An Active Directory-backed user representation object.
+    """An Active Directory-backed user-representation object.
 
     :param username: sAMAccountName of the user.
     :param ad_obj: connected object.
@@ -11,8 +10,13 @@ class ADuser(object):
     :param attributes: Dictionary to initiate with.
 
     Example:
-    >>> u = ADuser("wimpy", attributes={'mail': 'wimpy@wimpy.org',
-                                        'initial': 'w'})
+      >>> u = ADuser("wimpy", attributes={'mail': 'wimpy@wimpy.org',
+                                          'initial': 'w'})
+
+    .. note::
+
+     :func:`__setattr__` is defined, so attribute changes
+      will be made live if an ad_obj is provided.
 
     """
 

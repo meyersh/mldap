@@ -153,7 +153,13 @@ class mldap:
                base=None,
                objectType='sAMAccountName',
                pageSize=1000):
-        """ List all sAMAccountNames of a given OU """
+        """List all sAMAccountNames of a given OU
+
+        .. todo:
+           Update this to work with python-ldap-2.4+ (they changed the
+          api.)
+
+        """
         if base is None:
             base = self.LDAP_USER_BASE
         search = '%s=*' % (objectType)
@@ -172,8 +178,8 @@ class mldap:
 #
 
     def replace(self, samaccountname, attribute, value):
-       """ Replace/Set the value of a given attribute for the
-       specified user. """
+       """Replace/Set/Clear the value of a given attribute for the specified
+       user. """
 
        # Tuple: (mod_op, mod_type, mod_vals) where
        # mod_op is one of ldap.MOD_ADD, ldap.MOD_DELETE, ldap.MOD_REPLACE
@@ -416,10 +422,14 @@ class mldap:
                              # (no way we got two, right??)
 
     def resetpw(self, sAMAccountName, newpass):
-        """ Wraps around L{self.replace()} to reset a given
-        password. Note: This attempts the administrative
-        reset with whatever user this module binds with so
-        make sure that it has the proper AD permissions. """
+        """Wraps around L{self.replace()} to reset a given
+        password.
+
+        .. note:: This attempts the administrative reset using the
+          user this instance used to bind, make sure that it has the
+          proper AD permissions.
+
+        """
 
         self.replace(sAMAccountName,
                      'unicodePwd',
@@ -577,9 +587,12 @@ class mldap:
             return False
 
     def compare(self, samaccountname, attr, value):
-        """ Verify that an AD object has attr set to value.
+        """ Perform an ldap compare operation on an AD object.
 
-        Raises: :mod:`ldap.NO_SUCH_ATTRIBUTE`"""
+        :return: Bool (True for match)
+
+        :raises: :mod:`ldap.NO_SUCH_ATTRIBUTE`"""
+
         return self.compare_by_objectguid(
             self.getattr(samaccountname, 'objectGUID'), attr, value)
 
@@ -765,11 +778,12 @@ class mldap:
 
     def setuac(self, samaccountname, new_uac):
         """ Set the uac field for a given user.
+
         :param new_uac: The decimal representation of the
-        userAccountControl field (actually, any input is ok as long as
-        it converts properly with str() which at this time means
-        string, uac object, or int. This means '512', 512, uac(512)
-        are all acceptable. """
+          userAccountControl field (actually, any input is ok as long as
+          it converts properly with str() which at this time means
+          string, uac object, or int. This means '512', 512, uac(512)
+          are all acceptable. """
         self.replace(samaccountname, 'userAccountControl', str(new_uac))
 
     def isdisabled(self, samaccountname):
@@ -779,6 +793,7 @@ class mldap:
 
     def isexpired(self, samaccountname):
         """ Is a given sAMAccountName expired?
+
         accountExpires is the number of ticks (100n/s [.0000001s])
         since 12:00AM Jan 1, 1601. [#thanksMS]_ Additionally, it's in UTC
 
@@ -800,7 +815,9 @@ class mldap:
 
 
     def islocked(self, samaccountname):
-        """MSDN has this to say about lockoutTime:
+        """Is a given account locked?
+
+        MSDN has this to say about lockoutTime:
 
         The date and time (UTC) that this account was locked out. This
         value is stored as a large integer that represents the number
@@ -858,12 +875,17 @@ class mldap:
             return result
 
     def move(self, srcDN, destDN):
-        ''' (srcdn, newrdn, destdn)
-        self.ldap_client.rename_s(
-            'CN=Joe D Doe,OU=Users,DC=domain,DC=com',
-            'CN=Joe D Doe',
-            'OU=OldUsers,DC=domain,DC=com'
-        ) '''
+        """ Move an object from srcDN to destDN.
+
+        .. todo:: Should not use print statements here.
+        """
+
+        # (srcdn, newrdn, destdn)
+        # self.ldap_client.rename_s(
+        #     'CN=Joe D Doe,OU=Users,DC=domain,DC=com',
+        #     'CN=Joe D Doe',
+        #     'OU=OldUsers,DC=domain,DC=com'
+        # )
 
         rdn = srcDN.split(',')[0]
         print srcDN
@@ -876,16 +898,16 @@ class mldap:
         """This uses code not available until python-ldap v2.3.2. On
         RHEL/CentOS 5.8, repositories only have python-ldap v2.2.0.
 
-        param samaccountname: The accountname to search and move.
-        param destOU: the folder to move the samaccountname into.
-
-        >>> self.ldap_client.rename_s(
-            'CN=Jane D Doe,OU=Users,DC=domain,DC=com',
-            'CN=Jane D Doe',
-            'OU=OldUsers,DC=domain,DC=com'
-            )
-
+        :param samaccountname: The accountname to search and move.
+        :param destOU: the folder to move the samaccountname into.
         """
+
+        # rename_s syntax:
+        # >>> self.ldap_client.rename_s(
+        #     'CN=Jane D Doe,OU=Users,DC=domain,DC=com',
+        #     'CN=Jane D Doe',
+        #     'OU=OldUsers,DC=domain,DC=com'
+        #     )
 
         srcDN = ldap.dn.explode_dn(ad.get_dn_from_sn(samaccountname))
 
@@ -896,6 +918,8 @@ class mldap:
                                   destOU)
 
     def renameUser(self, old_username, new_username):
+        """ Rename a given AD object """
+
         u = self.getuser(old_username)
         if u:
             # Replace <old>@DOMAIN.FQDN with <new>@DOMAIN.FQDN using
@@ -1022,14 +1046,15 @@ class mldap:
 
         :return: The requested value, or None.
 
-           >>> mldapObj.getattr_by_filter('sAMAccountName', 'wimpy', 'mail')
-           'wimpy@wimpy.org'
+        .. examples::
 
-           >>> mldapObj.getattr_by_filter('sAMAccountName',
-                                          'wimpy',
-                                          'objectClass')
-           ['top', 'person', 'organizationalPerson', 'user']
+        >>> mldapObj.getattr_by_filter('sAMAccountName', 'wimpy', 'mail')
+        'wimpy@wimpy.org'
 
+        >>> mldapObj.getattr_by_filter('sAMAccountName',
+                                       'wimpy',
+                                       'objectClass')
+        ['top', 'person', 'organizationalPerson', 'user']
         """
 
         result = self.getattrs_by_filter(key, value)
@@ -1101,6 +1126,8 @@ class mldap:
             return None
 
     def getgroup(self, group):
+        """ Return a group as a :mod:`mldap2.adgroup.ADgroup` object """
+
         g = ADgroup(group, self.get_dn_from_sn(group))
         for user in self.bgroup(group):
             if user[0] is None:

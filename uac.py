@@ -126,9 +126,10 @@ class uac(object):
     def set(self, flag):
         """ Use OR to set a flag.
 
+        Example:
         >>> someUacObject.set(uac.ADS_UF_PASSWORD_EXPIRED).commit()
 
-        :return: Self so that calls may be chained:
+        :return: Self so that calls may be chained.
         """
 
         self.uac_value |= int(flag)
