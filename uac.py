@@ -4,8 +4,11 @@
 
 
 class uac(object):
-    """ A quick definition of some constants in the
-    userAccountControl attribute. """
+    """ An interface to work with userAccountControl flags.
+
+    Constants:
+
+    """
 
     uac_value = 0
     """ Default value (0) """
@@ -124,10 +127,10 @@ class uac(object):
         return uac.flags(self.uac_value)
 
     def set(self, flag):
-        """ Use OR to set a flag.
+        """ Set a UAC flag
 
         Example:
-        >>> someUacObject.set(uac.ADS_UF_PASSWORD_EXPIRED).commit()
+          >>> someUacObject.set(uac.ADS_UF_PASSWORD_EXPIRED).commit()
 
         :return: Self so that calls may be chained.
         """

@@ -1,13 +1,14 @@
 #!/usr/bin/env python
-"""Mldap2 is a custom AD/LDAP wrapper build using python-ldap. It is
+"""Mldap2 is a custom AD/LDAP wrapper built using python-ldap. It is
 used to simplify programmatic access to the users and groups in a
 Windows Server 2003 and Windows Server 2008 Active Directory(tm)
 Domain.
 
-Shaun Meyer - June, 2009
-
 """
+
 __version__ = "2.0.5"
+__author__ = "Shaun Meyer"
+__date__ = "June, 2009"
 
 import os
 import sys
@@ -43,7 +44,7 @@ def connect(creds):
         * LDAP_DOMAIN
 
     :returns:
-      A connected instance of the mldap object.
+      A connected :class:`adcon.mldap` object.
 
     """
     return mldap(**creds)

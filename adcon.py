@@ -69,7 +69,7 @@ class mldap:
         .. note::
 
           This shouldn't (but does) call :func:`sys.exit` for
-          :mod:`ldap.INVALID_CREDENTIALS` and :mod:`ldap.SERVER_DOWN`
+          :exc:`ldap.INVALID_CREDENTIALS` and :exc:`ldap.SERVER_DOWN`
           exceptions!
 
         """
@@ -101,11 +101,8 @@ class mldap:
         """ Taking an IDNO as only argument, does a search in the
         employeeNumber LDAP field for this value.
 
-        .. note::
-
-          This function has been deprecated.  It can (once code has
-          been written) be replaced with a call to
-          :func:`getattrs_by_filter`
+        .. deprecated:: 2.0
+           Use :func:`getattr_by_filter` instead.
 
         :param idno: string containing the users 7-digit ID.NO
 
@@ -153,7 +150,7 @@ class mldap:
                base=None,
                objectType='sAMAccountName',
                pageSize=1000):
-        """List all sAMAccountNames of a given OU
+        """Return a list all sAMAccountNames in a given OU
 
         .. todo:
            Update this to work with python-ldap-2.4+ (they changed the
@@ -544,12 +541,14 @@ class mldap:
                 unpacked_set[attr] = r[attr]
         return unpacked_set
 
-#
-# Returns a given set of attributes for an SN, probably superceded by
-# getattr()
-#
     def checkuser(self, samaccountname):
-        """ Superceded by self.getattr() """
+        """
+        Returns a given set of attributes for an SN.
+
+        .. deprecated:: 2.0
+           Use :func:`getattr` instead.
+        """
+
         searchpath = self.LDAP_BASE
         # This should probably look like...
         # (&(givenName=%s)(sn=%s))
@@ -572,9 +571,12 @@ class mldap:
 # exception: ldap.NO_SUCH_ATTRIBUTE
 
     def compare_by_objectguid(self, objectguid, attr, value):
-        """ Verify that an AD object has attr set to value.
+        """Verify that an AD object has attr set to value (using ldap
+        compare).
 
-        Raises: :mod:`ldap.NO_SUCH_ATTRIBUTE`"""
+        Raises: :mod:`ldap.NO_SUCH_ATTRIBUTE`
+
+        """
 
         if not value:
             return (self.getattr_by_filter('objectGUID', objectguid, attr)
@@ -591,7 +593,7 @@ class mldap:
 
         :return: Bool (True for match)
 
-        :raises: :mod:`ldap.NO_SUCH_ATTRIBUTE`"""
+        :raises: :exc:`ldap.NO_SUCH_ATTRIBUTE`"""
 
         return self.compare_by_objectguid(
             self.getattr(samaccountname, 'objectGUID'), attr, value)
@@ -647,8 +649,14 @@ class mldap:
     def getattr_old(self, samaccountname, attr="*"):
         """ Lookup attributes on a given sAMAccountName. If
         not specified, return all attributes.
-        getattr(sAMAccountName, [attr1, attr2, ...])
-        getattr(samaccountname) """
+
+        Usage:
+          getattr(sAMAccountName, [attr1, attr2, ...])
+          getattr(samaccountname)
+
+        .. deprecated:: 2.0
+           Use :func:`getattr` instead.
+        """
 
         searchpath = self.LDAP_BASE
         search = 'samaccountname=' + str(samaccountname)
@@ -698,8 +706,6 @@ class mldap:
     def getattr(self, samaccountname, attr="*"):
         """ Lookup attributes on a given sAMAccountName. If
         not specified, return all attributes.
-        getattr(sAMAccountName, [attr1, attr2, ...])
-        getattr(samaccountname)
 
         :param attr: String containing one LDAP attribute, a list of
             LDAP attributes, or a string containing '*' to return all
@@ -708,13 +714,20 @@ class mldap:
         :return: Requested attr. If Multiple attributes are requested,
             returns a a dictionary with attr keys.
 
-        Examples:
+        Usage:
+          >>> getattr(sAMAccountName, [attr1, attr2, ...])
+          >>> getattr(samaccountname)
 
+        Examples:
           >>> mldapObj.getattr("wimpy", "sAMAccountName")
           'wimpy'
 
-          >>> mldapObj.getattr("wimpy")['sAMAccountName']
-          'wimpy'
+          >>> mldapObj.getattr("wimpy")['mail']
+          'wimpy@wimpy.org'
+
+          >>> mldapObj.getattr("wimpy", ['sAMAccountName', 'mail'])
+          {'mail': 'wimpy@wimpy.org', 'sAMAccountName': 'wimpy'}
+
           """
 
         if not self.exists(samaccountname):
@@ -767,7 +780,9 @@ class mldap:
         >>> ad.getuac('shaunt')
         <<class 'mldap.uac'> object (['ADS_UF_NORMAL_ACCOUNT'])>
 
-        :return: a :mod:`mldap2.uac.uac` object derived from these flags.
+        >>> ad.getuac('wimpy').set(uac.ADS_UF_PASSWORD_EXPIRED).commit()
+
+        :return: a :class:`uac.uac` object derived from these flags.
         """
         userAccountControl_flags = int(
             self.getattr(samaccountname, 'userAccountControl'))
@@ -944,11 +959,11 @@ class mldap:
         :type attrlist: list
 
         :param compare: Comparison, valid operators: =, >=, <=
-        (lexicographical)
+          (lexicographical)
 
         :return: A list of result dictionaries.
 
-        Example:
+        Examples:
             >>> mldapObj.getattrs_by_filter("sAMAccountName",
                                             "wimpy")[0]['sAMAccountName']
             'wimpy'
@@ -1042,19 +1057,24 @@ class mldap:
         return results
 
     def getattr_by_filter(self, key, value, attr):
-        """ Retrieve an attribute by filter (key=val)
+        """Performance a search to match an object by attribute value.
 
         :return: The requested value, or None.
 
-        .. examples::
+        Examples:
 
-        >>> mldapObj.getattr_by_filter('sAMAccountName', 'wimpy', 'mail')
-        'wimpy@wimpy.org'
+        Get the mail attribute from an AD object identified by
+        sAMAccountName = "wimpy":
+          >>> mldapObj.getattr_by_filter('sAMAccountName', 'wimpy', 'mail')
+          'wimpy@wimpy.org'
 
-        >>> mldapObj.getattr_by_filter('sAMAccountName',
-                                       'wimpy',
-                                       'objectClass')
-        ['top', 'person', 'organizationalPerson', 'user']
+        Get the objectClass from an AD object identified by
+        sAMAccountName = "wimpy":
+          >>> mldapObj.getattr_by_filter('sAMAccountName',
+                                         'wimpy',
+                                         'objectClass')
+          ['top', 'person', 'organizationalPerson', 'user']
+
         """
 
         result = self.getattrs_by_filter(key, value)
@@ -1070,7 +1090,7 @@ class mldap:
         :param attr: AD attribute (sAMAccountName, etc)
         :type attr: str
 
-        :return: a list of :mod:`mldap2.aduser.ADuser` objects
+        :return: a list of :mod:`aduser.ADuser` objects
 
         Examples:
 
@@ -1093,8 +1113,8 @@ class mldap:
         :param attr: AD attribute (sAMAccountName, etc)
         :type attr: str
 
-        :return: a list of :mod:`mldap2.aduser.ADuser` objects or
-        `None` if there is no match.
+        :return: a list of :mod:`aduser.ADuser` objects or
+          `None` if there is no match.
 
         Examples:
 
@@ -1126,7 +1146,7 @@ class mldap:
             return None
 
     def getgroup(self, group):
-        """ Return a group as a :mod:`mldap2.adgroup.ADgroup` object """
+        """ Return a group as a :mod:`adgroup.ADgroup` object """
 
         g = ADgroup(group, self.get_dn_from_sn(group))
         for user in self.bgroup(group):
@@ -1140,6 +1160,10 @@ class mldap:
         return g
 
     def getusers(self, base=None, objectType='samaccountname'):
+        """
+        Retrieve a list of :class:`aduser.ADuser` objects (a more
+        Object-Oriented version of :func:`adcon.mldap.listou`)
+        """
         if base is None:
             base = self.LDAP_USER_BASE
         search = '%s=*' % (objectType)

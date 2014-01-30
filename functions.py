@@ -1,4 +1,4 @@
-# Helper functions
+""" This module contains various mldap helper functions """
 import datetime
 
 
@@ -11,7 +11,7 @@ def deprecated(message=None):
 
 
 def flatten(l):
-    ''' given a list of no elements, return None.
+    ''' Given a list of no elements, return None.
     given a list of one element, return just the element,
     given a list of more than one element, return the list. '''
 
@@ -35,6 +35,7 @@ def unicodePasswd(str_passwd):
 
 
 def now(dt=datetime.datetime.now()):
+    """ Return the current :mod:`datetime.datetime` object. """
     return dt
 
 

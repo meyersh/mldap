@@ -1,59 +1,68 @@
 MLDAP AD Wrapper Documentation
 ==============================
 
-Contents:
-
 .. toctree::
-   :maxdepth: 4
+   :maxdepth: 2
 
-:mod:`mldap2` Package
----------------------
-
-.. automodule:: __init__
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-:mod:`adcon` Module
--------------------
-
-.. automodule:: adcon
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-:mod:`adgroup` Module
----------------------
-
-.. automodule:: adgroup
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-:mod:`aduser` Module
---------------------
-
-.. automodule:: aduser
-    :members:
-    :undoc-members:
-    :show-inheritance:
+   __init__
+   uac
+   adcon
+   aduser
+   adgroup
+   functions
 
 
-:mod:`functions` Module
------------------------
+.. include:: __init__.rst
 
-.. automodule:: functions
-    :members:
-    :undoc-members:
-    :show-inheritance:
+..
+   :mod:`mldap2` Package
+   ---------------------
 
-:mod:`uac` Module
------------------
+   .. automodule:: __init__
+       :members:
+       :undoc-members:
+       :show-inheritance:
 
-.. automodule:: uac
-    :members:
-    :undoc-members:
-    :show-inheritance:
+   :mod:`adcon` Module
+   -------------------
+
+   .. automodule:: adcon
+       :members:
+       :undoc-members:
+       :show-inheritance:
+
+   :mod:`adgroup` Module
+   ---------------------
+
+   .. automodule:: adgroup
+       :members:
+       :undoc-members:
+       :show-inheritance:
+
+   :mod:`aduser` Module
+   --------------------
+
+   .. automodule:: aduser
+       :members:
+       :undoc-members:
+       :show-inheritance:
+
+
+   :mod:`functions` Module
+   -----------------------
+
+   .. automodule:: functions
+       :members:
+       :undoc-members:
+       :show-inheritance:
+
+   :mod:`uac` Module
+   -----------------
+
+   .. automodule:: uac
+       :members:
+       :undoc-members:
+       :show-inheritance:
 
 Indices and tables
 ==================
