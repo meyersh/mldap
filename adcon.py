@@ -801,6 +801,16 @@ class mldap:
           are all acceptable. """
         self.replace(samaccountname, 'userAccountControl', str(new_uac))
 
+    def ismember(self, samaccountname, group):
+        '''Check if a given samaccountname is a member of a given group.'''
+        if not group or not self.exists(group):
+            return False
+
+        memberOf = self.getattr(samaccountname, 'memberOf')
+
+        return (memberOf is not None
+                and self.get_dn_from_sn(group) in memberOf)
+
     def isdisabled(self, samaccountname):
         """ Is a given SN disabled? """
         return self.getuac(samaccountname).is_set(
