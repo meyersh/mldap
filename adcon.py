@@ -8,6 +8,7 @@ from adgroup import ADgroup
 
 from functions import unicodePasswd
 from functions import flatten
+from functions import epochToDatetime
 
 import datetime
 import warnings
@@ -860,6 +861,8 @@ class mldap:
         accounting for local time zones and daylight savings time.
 
         """
+        if self.getattr(samaccountname, 'lockoutTime') is None:
+            return False
 
         lockoutTime = int(self.getattr(samaccountname, 'lockoutTime'))
         if lockoutTime == 0:
