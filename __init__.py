@@ -1,9 +1,8 @@
 #!/usr/bin/env python
 """Mldap2 is a custom AD/LDAP wrapper built using python-ldap. It is
 used to simplify programmatic access to the users and groups in a
-Windows Server 2003 and Windows Server 2008 Active Directory(tm)
-Domain.
-
+Windows Server 2003, Windows Server 2008, and Windows Server 2012
+Active Directory(tm) Domain.
 """
 
 __version__ = "2.0.5"

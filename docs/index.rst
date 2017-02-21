@@ -5,10 +5,10 @@ MLDAP AD Wrapper Documentation
    :maxdepth: 2
 
    __init__
-   uac
    adcon
    aduser
    adgroup
+   uac
    functions
 
 

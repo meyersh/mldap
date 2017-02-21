@@ -6,6 +6,11 @@
 class uac(object):
     """ An interface to work with userAccountControl flags.
 
+    Example:
+      >>> u = ad.getuac('wimpy')
+      >>> u.set('ADS_UF_ACCOUNTDISABLE').set('ADS_UF_DONT_EXPIRE_PASSWORD').commit()
+
+
     Constants:
 
     """

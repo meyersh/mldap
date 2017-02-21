@@ -9,14 +9,15 @@ class ADuser(object):
     :type ad_obj: :mod:`mldap2`
     :param attributes: Dictionary to initiate with.
 
-    Example:
-      >>> u = ADuser("wimpy", attributes={'mail': 'wimpy@wimpy.org',
-                                          'initial': 'w'})
-
     .. note::
 
      :func:`__setattr__` is defined, so attribute changes
       will be made live if an ad_obj is provided.
+
+    Example (updating AD with new values):
+      >>> u.givenName = "wimpy" 
+
+    Writable attributes are listed in `writable_attributes`.
 
     """
 

@@ -295,7 +295,7 @@ class mldap:
         :param path: base CN of new group
 
         :type members: list
-        :param members: A list of members to pre-populate group.
+        :param members: A list of sAMAccountName's to add to this new group.
 
         """
 
@@ -448,6 +448,11 @@ class mldap:
 ###############################################################################
 
     def add_to_multivalued(self, objectguid, attribute, value):
+        """Add a given `value` to the multivalued `attribute` on the object
+        identified by `objectguid`. 
+
+        Returns: None
+        """
         if type(value) is not type(list()):
             value = [value]
 
@@ -472,7 +477,10 @@ class mldap:
 #
 
     def add_to_group(self, sAMAccountName, groupCN):
-        """ Add a user to a given group """
+        """ Add a user to a given group 
+
+        Returns: 0 (success), 1 (exception :mod:ldap.ALREADY_EXISTS)
+        """
         dn = self.get_dn_from_sn(sAMAccountName)
         group = self.get_dn_from_sn(groupCN)
         try:
@@ -505,7 +513,7 @@ class mldap:
 #
 
     def group(self, groupCN):
-        """ Return a list of a given groups' members """
+        """ Return the list of sAMAccountName's from a given groups' members field. """
         searchpath = self.LDAP_BASE
         search = 'samaccountname=' + str(groupCN)
         attrs = ['member', 'objectClass']
@@ -520,10 +528,9 @@ class mldap:
 
         return members
 
-    #
-    # Return all attributes for all users who are memberOf= a given group
-    #
     def bgroup(self, group):
+        """Return all attributes for all users who are memberOf= a given
+        group"""
         filter = "(&(memberOf=%s))" % self.get_dn_from_sn(group)
         i = self.ldap_client.search(self.LDAP_BASE,
                                   ldap.SCOPE_SUBTREE,
@@ -776,7 +783,6 @@ class mldap:
 
     def getuac(self, samaccountname):
         """ Retrieve the userAccountControl field for a given user.
-
         >>> ad.getuac('shaunt').flags()
         ['ADS_UF_NORMAL_ACCOUNT']
 
@@ -884,6 +890,11 @@ class mldap:
 #
 
     def search(self, first, last):
+        """ 
+
+        .. note:: This function is Deprecated. 
+        Use :func:`adcon.getattr_by_filter('anr', 'first last', 'sAMAccountName')` instead. 
+        """
         searchpath = self.LDAP_USER_BASE
         # This should probably look like...
         # (&(givenName=%s)(sn=%s))
@@ -925,8 +936,11 @@ class mldap:
         self.ldap_client.rename_s(srcDN, rdn, destDN)
 
     def move2(self, samaccountname, destOU):
-        """This uses code not available until python-ldap v2.3.2. On
-        RHEL/CentOS 5.8, repositories only have python-ldap v2.2.0.
+        """
+        Move an object, samaccountname, to destDN.
+
+        .. note:: This uses code not available until python-ldap v2.3.2. On
+                  RHEL/CentOS 5.8, repositories only have python-ldap v2.2.0.
 
         :param samaccountname: The accountname to search and move.
         :param destOU: the folder to move the samaccountname into.
@@ -1161,7 +1175,8 @@ class mldap:
             return None
 
     def getgroup(self, group):
-        """ Return a group as a :mod:`adgroup.ADgroup` object """
+        """Return `group` as a :mod:`adgroup.ADgroup` object. If no such
+        group is found, returns an empty :mod:`adgroup.ADgroup` object."""
 
         g = ADgroup(group, self.get_dn_from_sn(group))
         for user in self.bgroup(group):
