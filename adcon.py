@@ -575,6 +575,8 @@ class mldap:
         """Verify that an AD object has attr set to value (using ldap
         compare).
 
+        Returns: True if the `value` is a match.
+
         Raises: :mod:`ldap.NO_SUCH_ATTRIBUTE`
 
         """
@@ -868,7 +870,7 @@ class mldap:
         if lockoutTime == 0:
             return False
 
-        lockoutDuration = int(self.getattr(samaccountname, 'lockoutDuration'))
+        lockoutDuration = int(self.getattr(samaccountname, 'lockoutDuration') or 0)
 
         validAfter = epochToDatetime(lockoutTime + lockoutDuration)
         if validAfter < datetime.datetime.now():
