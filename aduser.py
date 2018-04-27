@@ -149,6 +149,9 @@ class ADuser(object):
     def __eq__(self, other):
         return self.objectGUID == other.objectGUID
 
+    def __hash__(self):
+        return hash(self.objectGUID)
+
     def __setattr__(self, attr, value):
         """ Sugar over adUserObj.sAMAccountName = "new name" to
         commit it back immediately, if possible, to AD. """
